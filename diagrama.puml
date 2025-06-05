@@ -1,0 +1,86 @@
+@startuml diagrama
+
+class Usuario {
+    - nombre: string
+    - puntuacionMaxima: int
+    + iniciarSesion()
+    + obtenerPuntuacionMaxima(): int
+}
+
+class Ventana {
+    - ancho: int
+    - alto: int
+    + mostrar()
+    + cerrar()
+}
+
+class Puntaje {
+    - valor: int
+    + aumentar(valor: int)
+    + reiniciar()
+    + obtenerValor(): int
+}
+
+class JuegoCatCross {
+    - personaje: Gatito
+    - nivelActual: Nivel
+    - sonido: Sonido
+    - ventana: Ventana
+    - puntaje: Puntaje
+    + iniciarJuego()
+    + manejarEventos()
+    + detenerJuego()
+}
+
+class Gatito {
+    - nombre: string
+    - posicionX: int
+    - posicionY: int
+    - vidas: int
+    - energia: int
+    + moverArriba()
+    + moverAbajo()
+    + moverIzquierda()
+    + moverDerecha()
+    + usarPoderEspecial()
+}
+
+class Nivel {
+    - tema: string
+    - obstaculos: Obstaculo[]
+    - coleccionables: Coleccionable[]
+    + generarObstaculos()
+    + generarColeccionables()
+    + actualizar()
+}
+
+class Sonido {
+    - archivo: string
+    + reproducir()
+    + detener()
+}
+
+class Obstaculo {
+    - tipo: string
+    - posicionX: int
+    - posicionY: int
+    + mover()
+}
+
+class Coleccionable {
+    - tipo: string
+    - posicionX: int
+    - posicionY: int
+    + recolectar()
+}
+
+JuegoCatCross *-- Gatito : tiene un
+JuegoCatCross *-- Nivel : tiene un
+JuegoCatCross *-- Sonido : tiene un
+JuegoCatCross *-- Ventana : tiene un
+JuegoCatCross *-- Puntaje : tiene un
+Usuario o-- JuegoCatCross : usa un
+Nivel "1" *-- "*" Obstaculo : tiene muchos
+Nivel "1" *-- "*" Coleccionable : tiene muchos
+
+@enduml
