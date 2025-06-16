@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <string>
+#include <vector>
 
 class Ventana {
 private:
@@ -25,9 +26,11 @@ public:
     }
 
     // Muestra la imagen cargada en la ventana
-    void Mostrar() {
+    void MostrarElementos(const std::vector<sf::Drawable*>& elementos) {
         window.clear();
-        window.draw(sprite);
+        for (const auto& elemento : elementos) {
+            window.draw(*elemento);
+        }
         window.display();
     }
 
@@ -40,7 +43,15 @@ public:
         }
     }
 
+    void Limpiar() {
+        window.clear();
+    }
+
     bool EstaAbierta() const {
         return window.isOpen();
+    }
+
+    void DibujarElemento(const sf::Drawable& elemento) {
+        window.draw(elemento);
     }
 };

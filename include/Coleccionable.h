@@ -16,7 +16,7 @@ public:
 
     // Método para cargar la textura desde un archivo
     bool CargarTextura(const std::string& rutaArchivo) {
-        if (!textura.loadFromFile("assets/images/Grass_02.png")) {
+        if (!textura.loadFromFile(rutaArchivo)) {
             return false;
         }
         sprite.setTexture(textura);
@@ -41,7 +41,7 @@ public:
     void Recolectar() {
         if (!recolectado) {
             recolectado = true;
-            sprite.setPosition(-100.0f, -100.0f); // Ocultar el sprite
+            sprite.setPosition(-100.0f, -100.0f); // Hide sprite
         }
     }
 
@@ -51,8 +51,8 @@ public:
     }
 
     // Método para obtener el sprite (para colisiones)
-    const sf::Sprite& GetSprite() const {
-        return sprite;
+    sf::Sprite* GetSprite() {
+        return &sprite;
     }
 
     // Método para actualizar el estado del coleccionable

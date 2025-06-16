@@ -3,18 +3,30 @@
 #include <SFML/Graphics.hpp>
 #include <fstream>
 #include <string>
+#include <iostream> // Incluir para mensajes de depuración
 
 class Puntaje {
 private:
     int valor;
     int maximo;
+    sf::Font fuente;
+    sf::Text texto;
 
 public:
-    Puntaje() : valor(0), maximo(0) {}
+    Puntaje() : valor(0), maximo(0) {
+        if (!fuente.loadFromFile("assets/fonts/Platinum Sign.ttf")) {
+            throw std::runtime_error("No se pudo cargar la fuente para el puntaje");
+        }
+        texto.setFont(fuente);
+        texto.setCharacterSize(24);
+        texto.setFillColor(sf::Color::White);
+        texto.setPosition(10, 10);
+    }
 
     // Actualizar puntaje
     void Aumentar(int cantidad) { 
         valor += cantidad; 
+        texto.setString("Puntaje: " + std::to_string(valor));
         if (valor > maximo) maximo = valor;
     }
     void Reiniciar() { valor = 0; }
@@ -32,13 +44,7 @@ public:
     }
 
     // Mostrar puntaje en pantalla con SFML
-    void Dibujar(sf::RenderWindow& window, sf::Font& font, int x = 10, int y = 10) {
-        sf::Text texto;
-        texto.setFont(font);
-        texto.setString("Puntaje: " + std::to_string(valor) + "\nMaximo: " + std::to_string(maximo));
-        texto.setCharacterSize(24);
-        texto.setFillColor(sf::Color::Black);
-        texto.setPosition(x, y);
+    void Dibujar(sf::RenderWindow& window) {
         window.draw(texto);
     }
 };

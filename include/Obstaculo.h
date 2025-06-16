@@ -10,6 +10,8 @@ private:
     int ancho;
     int alto;
     bool activo;
+    sf::Texture textura;
+    sf::Sprite sprite;
 
 public:
     // Constructor por defecto: crea un obstáculo inactivo en la posición (0,0) con tamaño 1x1
@@ -47,11 +49,40 @@ public:
             posicionY + alto > y;
     }
     // Método para mover el obstáculo (puede ser redefinido para obstáculos móviles)
-    void Mover() {}
+    void Mover() {
+        sprite.move(-2.0f, 0.0f); // Move left
+        if (sprite.getPosition().x < -sprite.getGlobalBounds().width) {
+            sprite.setPosition(800.0f, sprite.getPosition().y); // Reset position
+        }
+    }
 
     // Método para actualizar el estado del obstáculo
     void Actualizar();
 
     // Método para renderizar el obstáculo
     void Renderizar(sf::RenderWindow& ventana) const;
+
+    bool CargarTextura(const std::string& rutaArchivo) {
+        if (!textura.loadFromFile(rutaArchivo)) {
+            return false;
+        }
+        sprite.setTexture(textura);
+        return true;
+    }
+
+    void SetPosicion(int x, int y) {
+        posicionX = x;
+        posicionY = y;
+        sprite.setPosition(static_cast<float>(x), static_cast<float>(y));
+    }
+
+    void Dibujar(sf::RenderWindow& ventana) {
+        if (activo) {
+            ventana.draw(sprite);
+        }
+    }
+
+    sf::Sprite* GetSprite() {
+        return &sprite;
+    }
 };
