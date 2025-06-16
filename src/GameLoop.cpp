@@ -121,11 +121,9 @@ int main() {
     }
 
     int level = 1; // Track the current level
-    int framesSinceLastLevelUp = 0; // Track frames to increase level
-
-    // Mover obstáculos cada cierto tiempo para que sea más lento
-    static sf::Clock obstacleClock;
     float obstacleInterval = 0.35f; // segundos entre movimientos de obstáculos (ajusta para más lento o rápido)
+    static sf::Clock obstacleClock;
+    int lastPlayerRow = player.gridY;
 
     while (window.isOpen()) {
         sf::Event event;
@@ -136,21 +134,46 @@ int main() {
         }
 
         // Movimiento por evento (no mantener presionada la tecla)
+        bool moved = false;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
             player.move(0, -1);
+            moved = true;
             sf::sleep(sf::milliseconds(120));
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
             player.move(0, 1);
+            moved = true;
             sf::sleep(sf::milliseconds(120));
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
             player.move(-1, 0);
+            moved = true;
             sf::sleep(sf::milliseconds(120));
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
             player.move(1, 0);
+            moved = true;
             sf::sleep(sf::milliseconds(120));
+        }
+
+        // Progresión de nivel: si el jugador avanza hacia arriba, sube el nivel y aumenta la velocidad
+        if (player.gridY < lastPlayerRow) {
+            level++;
+            obstacleInterval = std::max(0.08f, obstacleInterval - 0.03f);
+            lastPlayerRow = player.gridY;
+            // Cuando el jugador llega a la fila superior, reinicia abajo y genera nuevos obstáculos
+            if (player.gridY == 0) {
+                player.gridY = GRID_ROWS - 1;
+                player.shape.setPosition(player.gridX * OBSTACLE_SIZE, player.gridY * OBSTACLE_SIZE);
+                obstacles.clear();
+                for (int row = 0; row < GRID_ROWS - 1; ++row) {
+                    if (row == GRID_ROWS - 1) continue;
+                    int col = rand() % GRID_COLS;
+                    int dir = (rand() % 2 == 0) ? 1 : -1;
+                    obstacles.emplace_back(col, row, dir);
+                }
+                lastPlayerRow = player.gridY;
+            }
         }
 
         // Mover obstáculos
