@@ -1,88 +1,35 @@
 #pragma once
 #include <string>
-#include <SFML/Graphics.hpp> // Asegúrate de incluir SFML/Graphics.hpp para la clase sf::RenderWindow
+#include <SFML/Graphics.hpp>
 
 class Obstaculo {
 private:
     std::string tipo;
-    int posicionX;
-    int posicionY;
-    int ancho;
-    int alto;
+    int gridX;
+    int gridY;
+    int direction; // 1: derecha, -1: izquierda
+    sf::RectangleShape shape;
     bool activo;
-    sf::Texture textura;
-    sf::Sprite sprite;
 
 public:
-    // Constructor por defecto: crea un obstáculo inactivo en la posición (0,0) con tamaño 1x1
-    Obstaculo() : tipo(""), posicionX(0), posicionY(0), ancho(1), alto(1), activo(true) {}
-    // Constructor personalizado: permite crear un obstáculo con tipo, posición y tamaño específicos
-    Obstaculo(const std::string& t, int x, int y, int w, int h)
-        : tipo(t), posicionX(x), posicionY(y), ancho(w), alto(h), activo(true) {}
-
-    // Cambia la posición del obstáculo en el escenario
-    void setPosicion(int x, int y) { posicionX = x; posicionY = y; }
-    // Devuelve la posición X del obstáculo
-    int getPosicionX() const { return posicionX; }
-    // Devuelve la posición Y del obstáculo
-    int getPosicionY() const { return posicionY; }
-    // Cambia el tipo de obstáculo (por ejemplo: roca, árbol, etc.)
-    void setTipo(const std::string& t) { tipo = t; }
-    // Devuelve el tipo de obstáculo
-    std::string getTipo() const { return tipo; }
-    // Cambia el tamaño del obstáculo
-    void setTamano(int w, int h) { ancho = w; alto = h; }
-    // Devuelve el ancho del obstáculo
-    int getAncho() const { return ancho; }
-    // Devuelve el alto del obstáculo
-    int getAlto() const { return alto; }
-    // Indica si el obstáculo está activo en el juego
-    bool estaActivo() const { return activo; }
-    // Desactiva el obstáculo (por ejemplo, si es destruido o recogido)
-    void destruir() { activo = false; }
-    // Verifica si el obstáculo colisiona con un área dada (útil para detectar choques con el jugador u otros objetos)
-    bool colisionaCon(int x, int y, int w, int h) const {
-        return activo &&
-            posicionX < x + w &&
-            posicionX + ancho > x &&
-            posicionY < y + h &&
-            posicionY + alto > y;
-    }
-    // Método para mover el obstáculo (puede ser redefinido para obstáculos móviles)
-    void Mover() {
-        sprite.move(-2.0f, 0.0f); // Move left
-        if (sprite.getPosition().x < -sprite.getGlobalBounds().width) {
-            sprite.setPosition(800.0f, sprite.getPosition().y); // Reset position
-        }
+    Obstaculo(const std::string& t = "car", int x = 0, int y = 0, int dir = 1)
+        : tipo(t), gridX(x), gridY(y), direction(dir), activo(true) {
+        shape.setSize(sf::Vector2f(48, 48));
+        shape.setFillColor(tipo == "car" ? sf::Color::Red : sf::Color::Blue);
+        shape.setPosition(gridX * 48, gridY * 48);
     }
 
-    // Método para actualizar el estado del obstáculo
-    void Actualizar();
-
-    // Método para renderizar el obstáculo
-    void Renderizar(sf::RenderWindow& ventana) const;
-
-    bool CargarTextura(const std::string& rutaArchivo) {
-        if (!textura.loadFromFile(rutaArchivo)) {
-            return false;
-        }
-        sprite.setTexture(textura);
-        return true;
+    void Mover(int maxGridX) {
+        gridX += direction;
+        if (gridX < 0) gridX = maxGridX;
+        if (gridX > maxGridX) gridX = 0;
+        shape.setPosition(gridX * 48, gridY * 48);
     }
 
-    void SetPosicion(int x, int y) {
-        posicionX = x;
-        posicionY = y;
-        sprite.setPosition(static_cast<float>(x), static_cast<float>(y));
-    }
-
-    void Dibujar(sf::RenderWindow& ventana) {
-        if (activo) {
-            ventana.draw(sprite);
-        }
-    }
-
-    sf::Sprite* GetSprite() {
-        return &sprite;
-    }
+    int GetGridX() const { return gridX; }
+    int GetGridY() const { return gridY; }
+    int GetDirection() const { return direction; }
+    sf::RectangleShape& GetShape() { return shape; }
+    bool EstaActivo() const { return activo; }
+    void Destruir() { activo = false; }
 };

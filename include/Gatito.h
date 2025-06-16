@@ -1,76 +1,36 @@
 #pragma once
 #include <string>
-#include <SFML/Graphics/Rect.hpp> // Uso de sf::FloatRect
-#include <SFML/Graphics.hpp> // Para sf::Texture y sf::Sprite
+#include <SFML/Graphics.hpp>
 
 class Gatito {
 private:
     std::string nombre;
-    int posicionX;
-    int posicionY;
+    int gridX;
+    int gridY;
     int vidas;
     int energia;
     sf::Texture textura;
-    sf::Sprite sprite;
+    sf::RectangleShape shape;
 
 public:
-    Gatito() : nombre("Gatito"), posicionX(0), posicionY(0), vidas(3), energia(100) {
-        if (!textura.loadFromFile("assets/images/Grass_02.png")) {
-            throw std::runtime_error("No se pudo cargar la textura del gatito");
-        }
-        sprite.setTexture(textura);
-        sprite.setPosition(static_cast<float>(posicionX), static_cast<float>(posicionY)); // Posición inicial
+    Gatito() : nombre("Gatito"), gridX(0), gridY(0), vidas(3), energia(100) {
+        shape.setSize(sf::Vector2f(48, 48));
+        shape.setFillColor(sf::Color::Yellow);
+        shape.setPosition(gridX * 48, gridY * 48);
     }
 
-    // Métodos de movimiento con límites de movimiento en la ventana
-    void MoverArriba(int limiteSuperior = 0) {
-        if (posicionY - 10 >= limiteSuperior)
-            posicionY -= 10;
-    }
-    void MoverAbajo(int altoVentana, int altoSprite = 64) {
-        if (posicionY + 10 <= altoVentana - altoSprite)
-            posicionY += 10;
-    }
-    void MoverIzquierda(int limiteIzquierdo = 0) {
-        if (posicionX - 10 >= limiteIzquierdo)
-            posicionX -= 10;
-    }
-    void MoverDerecha(int anchoVentana, int anchoSprite = 64) {
-        if (posicionX + 10 <= anchoVentana - anchoSprite)
-            posicionX += 10;
-    }
-    void Mover(float offsetX, float offsetY) {
-        sprite.move(offsetX, offsetY);
-    }
+    void MoverArriba() { if (gridY > 0) gridY--; shape.setPosition(gridX * 48, gridY * 48); }
+    void MoverAbajo(int maxGridY) { if (gridY < maxGridY) gridY++; shape.setPosition(gridX * 48, gridY * 48); }
+    void MoverIzquierda() { if (gridX > 0) gridX--; shape.setPosition(gridX * 48, gridY * 48); }
+    void MoverDerecha(int maxGridX) { if (gridX < maxGridX) gridX++; shape.setPosition(gridX * 48, gridY * 48); }
 
-    // Metodos Gestión de vidas y energía
-    
-    void PerderVida() {
-        if (vidas > 0) vidas--;
-    }
-    int GetVidas() const {
-        return vidas;
-    }
-    void GanarVida() { vidas++; }
-    void ConsumirEnergia(int e) { energia -= e; }
-    void RecargarEnergia(int e) { energia += e; }
+    int GetGridX() const { return gridX; }
+    int GetGridY() const { return gridY; }
+    sf::RectangleShape& GetShape() { return shape; }
 
-    void SetPosicion(int x, int y) {
-        posicionX = x;
-        posicionY = y;
-        sprite.setPosition(static_cast<float>(x), static_cast<float>(y));
-    }
+    void Reiniciar(int startX, int startY) { gridX = startX; gridY = startY; shape.setPosition(gridX * 48, gridY * 48); }
 
-    void Dibujar(sf::RenderWindow& ventana) {
-        ventana.draw(sprite);
-    }
-
-    sf::Sprite* GetSprite() {
-        return &sprite;
-    }
-
-    sf::FloatRect GetSpriteRect() const {
-        return sf::FloatRect(static_cast<float>(posicionX), static_cast<float>(posicionY), 64.0f, 64.0f); // Suponiendo un tamaño de sprite de 64x64
-    }
-
+    void PerderVida() { if (vidas > 0) vidas--; }
+    int GetVidas() const { return vidas; }
+    void SetVidas(int v) { vidas = v; }
 };

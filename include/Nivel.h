@@ -1,62 +1,34 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include <Obstaculo.h>
-#include <Coleccionable.h>
+#include "Obstaculo.h"
 #include <string>
 #include <vector>
-#include <iostream> 
 
 class Nivel {
 private:
     std::string tema;
     std::vector<Obstaculo> obstaculos;
-    std::vector<Coleccionable> coleccionables;
-
-    sf::Texture backgroundTexture;
-    sf::Sprite backgroundSprite;
+    int gridWidth;
+    int gridHeight;
 
 public:
-    Nivel() : tema("") {}
+    Nivel(int width = 10, int height = 10) : tema(""), gridWidth(width), gridHeight(height) {}
 
-    void GenerarObstaculos() {
+    void GenerarObstaculos(int fila, int cantidad, int direction) {
         obstaculos.clear();
-        for (int i = 0; i < 5; ++i) {
-            Obstaculo obstaculo;
-            obstaculos.push_back(obstaculo);
+        for (int i = 0; i < cantidad; ++i) {
+            int x = i * (gridWidth / cantidad);
+            obstaculos.emplace_back("car", x, fila, direction);
         }
     }
 
-    void GenerarColeccionables() {
-        coleccionables.clear();
-        for (int i = 0; i < 3; ++i) {
-            Coleccionable coleccionable;
-            coleccionables.push_back(coleccionable);
+    void ActualizarObstaculos() {
+        for (auto& obs : obstaculos) {
+            obs.Mover(gridWidth - 1);
         }
     }
 
-    void Actualizar() {
-        for (auto& obstaculo : obstaculos) {
-            obstaculo.Actualizar();
-        }
-        for (auto& coleccionable : coleccionables) {
-            coleccionable.Actualizar();
-        }
-    }
-
-    void Renderizar(sf::RenderWindow& ventana) {
-        ventana.draw(backgroundSprite);
-        for (const auto& obstaculo : obstaculos) {
-            obstaculo.Renderizar(ventana);
-        }
-        for (const auto& coleccionable : coleccionables) {
-            coleccionable.Renderizar(ventana);
-        }
-    }
-
-    void CargarRecursos(const std::string& rutaFondo) {
-        if (!backgroundTexture.loadFromFile("assets/images/fondo_inicio.png")) {
-            std::cerr << "Error al cargar la textura del fondo desde: " << rutaFondo << std::endl;
-        }
-        backgroundSprite.setTexture(backgroundTexture);
-    }
+    std::vector<Obstaculo>& GetObstaculos() { return obstaculos; }
+    int GetGridWidth() const { return gridWidth; }
+    int GetGridHeight() const { return gridHeight; }
 };

@@ -14,208 +14,160 @@
 class JuegoCatCross {
 private:
     Gatito personaje;
-    Nivel nivelActual;
-    Sonido sonido;
-    Ventana ventana;
-    Puntaje puntaje;
-    std::vector<Coleccionable> coleccionables; // Lista de coleccionables
-    std::list<Obstaculo> obstaculos; // Lista de obstáculos
-    bool juegoTerminado = false; // Indica si el juego ha terminado
-
+    Nivel nivel;
+    int level = 1;
+    float obstacleInterval = 0.35f;
+    int lastPlayerRow;
+    sf::Clock obstacleClock;
 public:
-    JuegoCatCross() {}
+    void IniciarJuego() {
+        const int WINDOW_WIDTH = 800;
+        const int WINDOW_HEIGHT = 600;
+        const int CELL_SIZE = 48;
+        const int GRID_COLS = WINDOW_WIDTH / CELL_SIZE;
+        const int GRID_ROWS = WINDOW_HEIGHT / CELL_SIZE;
 
-    void InicializarColeccionables() {
-        std::cout << "Debug: Inicializando coleccionables..." << std::endl;
-        Coleccionable c1;
-        if (!c1.CargarTextura("assets/images/Grass_02.png")) {
-            std::cout << "Error: No se pudo cargar la textura del coleccionable 1." << std::endl;
+        srand(static_cast<unsigned>(time(0)));
+        sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Crossy Road");
+        sf::Font font;
+        if (!font.loadFromFile("assets/fonts/Platinum Sign.ttf")) {
+            std::cerr << "Error: No se pudo cargar la fuente." << std::endl;
+            return;
         }
-        c1.SetPosicion(100, 200);
-        coleccionables.push_back(c1);
-
-        Coleccionable c2;
-        if (!c2.CargarTextura("assets/images/coleccionable2.png")) {
-            std::cout << "Error: No se pudo cargar la textura del coleccionable 2." << std::endl;
-        }
-        c2.SetPosicion(300, 400);
-        coleccionables.push_back(c2);
-        std::cout << "Debug: Coleccionables inicializados correctamente." << std::endl;
-    }
-
-    void DibujarColeccionables(sf::RenderWindow& ventana) {
-        for (auto& coleccionable : coleccionables) {
-            coleccionable.Dibujar(ventana);
-        }
-    }
-
-    void VerificarColisionesColeccionables() {
-        std::cout << "Debug: Verificando colisiones con coleccionables..." << std::endl;
-        sf::FloatRect jugadorBounds = personaje.GetSprite()->getGlobalBounds();
-        for (auto& coleccionable : coleccionables) {
-            if (!coleccionable.EsRecolectado() && coleccionable.GetSprite()->getGlobalBounds().intersects(jugadorBounds)) {
-                std::cout << "Debug: Colisión detectada con un coleccionable." << std::endl;
-                coleccionable.Recolectar();
-                puntaje.Aumentar(10);
-            }
-        }
-    }
-
-    void VerificarColisionesObstaculos() {
-        for (auto& obstaculo : obstaculos) {
-            if (obstaculo.GetSprite()->getGlobalBounds().intersects(personaje.GetSprite()->getGlobalBounds())) {
-                personaje.PerderVida();
-                obstaculo.destruir();
-                if (personaje.GetVidas() <= 0) {
-                    juegoTerminado = true;
+        sf::Text title("CROSSY ROAD", font, 50);
+        title.setFillColor(sf::Color::White);
+        title.setPosition(WINDOW_WIDTH / 2 - 150, WINDOW_HEIGHT / 2 - 100);
+        sf::Text instructions("Presiona Enter para comenzar", font, 30);
+        instructions.setFillColor(sf::Color::White);
+        instructions.setPosition(WINDOW_WIDTH / 2 - 200, WINDOW_HEIGHT / 2);
+        while (window.isOpen()) {
+            sf::Event event;
+            bool startGame = false;
+            while (window.pollEvent(event)) {
+                if (event.type == sf::Event::Closed) {
+                    window.close();
+                }
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) {
+                    startGame = true;
+                    break;
                 }
             }
+            if (startGame) break;
+            window.clear();
+            window.draw(title);
+            window.draw(instructions);
+            window.display();
         }
-    }
-
-    void InicializarObstaculos() {
-        Obstaculo o1;
-        o1.CargarTextura("assets/images/obstaculo1.png");
-        o1.SetPosicion(100, 500); // Adjusted position for visibility
-        obstaculos.push_back(o1);
-
-        Obstaculo o2;
-        o2.CargarTextura("assets/images/obstaculo2.png");
-        o2.SetPosicion(700, 300); // Adjusted position for visibility
-        obstaculos.push_back(o2);
-    }
-
-    void DibujarObstaculos(sf::RenderWindow& ventana) {
-        for (auto& obstaculo : obstaculos) {
-            obstaculo.Dibujar(ventana);
-        }
-    }
-
-    void ActualizarObstaculos() {
-        for (auto& obstaculo : obstaculos) {
-            obstaculo.Mover();
-            if (obstaculo.GetSprite()->getGlobalBounds().intersects(personaje.GetSprite()->getGlobalBounds())) {
-                std::cout << "Debug: Colisión detectada con un obstáculo." << std::endl;
-                juegoTerminado = true; // Terminar el juego si hay colisión
+        // Inicializar jugador y nivel
+        personaje.Reiniciar(GRID_COLS / 2, GRID_ROWS - 1);
+        nivel = Nivel(GRID_COLS, GRID_ROWS);
+        GenerarNivelCrossyRoad();
+        lastPlayerRow = personaje.GetGridY();
+        while (window.isOpen()) {
+            sf::Event event;
+            while (window.pollEvent(event)) {
+                if (event.type == sf::Event::Closed) {
+                    window.close();
+                }
             }
-        }
-    }
-
-    void IniciarJuego() {
-        std::cout << "Debug: Iniciando el juego..." << std::endl;
-        InicializarColeccionables();
-        InicializarObstaculos();
-
-        while (ventana.EstaAbierta() && !juegoTerminado) {
-            std::cout << "Debug: Ejecutando el bucle principal del juego..." << std::endl;
-            ventana.ManejarEventos();
-            VerificarColisionesColeccionables();
-            VerificarColisionesObstaculos();
-            ventana.Limpiar();
-
-            std::vector<sf::Drawable*> elementos;
-            for (auto& coleccionable : coleccionables) {
-                elementos.push_back(coleccionable.GetSprite());
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+                personaje.MoverArriba();
+                sf::sleep(sf::milliseconds(120));
             }
-            for (auto& obstaculo : obstaculos) {
-                elementos.push_back(obstaculo.GetSprite());
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+                personaje.MoverAbajo(GRID_ROWS - 1);
+                sf::sleep(sf::milliseconds(120));
             }
-            elementos.push_back(personaje.GetSprite());
-
-            ventana.MostrarElementos(elementos);
-            sf::sleep(sf::seconds(1.f / 60.f));
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+                personaje.MoverIzquierda();
+                sf::sleep(sf::milliseconds(120));
+            }
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+                personaje.MoverDerecha(GRID_COLS - 1);
+                sf::sleep(sf::milliseconds(120));
+            }
+            if (personaje.GetGridY() < lastPlayerRow) {
+                level++;
+                obstacleInterval = std::max(0.08f, obstacleInterval - 0.03f);
+                lastPlayerRow = personaje.GetGridY();
+                if (personaje.GetGridY() == 0) {
+                    personaje.Reiniciar(GRID_COLS / 2, GRID_ROWS - 1);
+                    GenerarNivelCrossyRoad();
+                    lastPlayerRow = personaje.GetGridY();
+                }
+            }
+            if (obstacleClock.getElapsedTime().asSeconds() > obstacleInterval) {
+                nivel.ActualizarObstaculos();
+                obstacleClock.restart();
+            }
+            bool collisionDetected = false;
+            for (auto& obstaculo : nivel.GetObstaculos()) {
+                if (personaje.GetGridX() == obstaculo.GetGridX() && personaje.GetGridY() == obstaculo.GetGridY()) {
+                    collisionDetected = true;
+                    break;
+                }
+            }
+            if (collisionDetected) {
+                std::cout << "Game Over!" << std::endl;
+                break;
+            }
+            window.clear();
+            window.draw(personaje.GetShape());
+            for (auto& obstaculo : nivel.GetObstaculos()) {
+                window.draw(obstaculo.GetShape());
+            }
+            window.display();
         }
-
-        if (juegoTerminado) {
-            std::cout << "Debug: El juego ha terminado." << std::endl;
-            MostrarPantallaFin();
-        }
+        std::cout << "Debug: Juego terminado." << std::endl;
     }
 
     void MostrarPantallaInicio() {
-        sf::RenderWindow ventana(sf::VideoMode(800, 600), "Cat Road");
-
-        // Cargar la textura del fondo
-        sf::Texture fondoTexture;
-        if (!fondoTexture.loadFromFile("assets/images/fondo_inicio.png")) {
-            throw std::runtime_error("No se pudo cargar la textura del fondo");
+        const int WINDOW_WIDTH = 800;
+        const int WINDOW_HEIGHT = 600;
+        sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Crossy Road - Inicio");
+        sf::Font font;
+        if (!font.loadFromFile("assets/fonts/Platinum Sign.ttf")) {
+            std::cerr << "Error: No se pudo cargar la fuente." << std::endl;
+            return;
         }
-        sf::Sprite fondoSprite(fondoTexture);
-
-        // Cargar la fuente para el texto
-        sf::Font fuente;
-        if (!fuente.loadFromFile("assets/fonts/Platinum Sign.ttf")) {
-            throw std::runtime_error("No se pudo cargar la fuente");
-        }
-
-        // Configurar el texto del título
-        sf::Text titulo("CAT ROAD", fuente, 30);
-        titulo.setFillColor(sf::Color::White);
-        titulo.setPosition(250, 100);
-
-        // Configurar las opciones del menú
-        sf::Text opcionJugar("Presiona Enter para Jugar", fuente, 20);
-        opcionJugar.setFillColor(sf::Color::White);
-        opcionJugar.setPosition(200, 300);
-
-        sf::Text opcionSalir("Presiona Esc para Salir", fuente, 20);
-        opcionSalir.setFillColor(sf::Color::White);
-        opcionSalir.setPosition(200, 400);
-
-        bool iniciarJuego = false;
-
-        while (ventana.isOpen()) {
-            sf::Event evento;
-            while (ventana.pollEvent(evento)) {
-                if (evento.type == sf::Event::Closed) {
-                    ventana.close();
+        sf::Text title("CROSSY ROAD", font, 50);
+        title.setFillColor(sf::Color::White);
+        title.setPosition(WINDOW_WIDTH / 2 - 150, WINDOW_HEIGHT / 2 - 100);
+        sf::Text instructions("Presiona Enter para comenzar", font, 30);
+        instructions.setFillColor(sf::Color::White);
+        instructions.setPosition(WINDOW_WIDTH / 2 - 200, WINDOW_HEIGHT / 2);
+        while (window.isOpen()) {
+            sf::Event event;
+            bool startGame = false;
+            while (window.pollEvent(event)) {
+                if (event.type == sf::Event::Closed) {
+                    window.close();
                 }
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) {
-                    iniciarJuego = true;
-                    ventana.close(); // Cerrar la pantalla de inicio y pasar al juego
-                }
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
-                    ventana.close();
-                    exit(0); // Salir del juego
+                    startGame = true;
+                    break;
                 }
             }
-
-            ventana.clear();
-            ventana.draw(fondoSprite);
-            ventana.draw(titulo);
-            ventana.draw(opcionJugar);
-            ventana.draw(opcionSalir);
-            ventana.display();
-        }
-
-        if (iniciarJuego) {
-            IniciarJuego();
+            if (startGame) break;
+            window.clear();
+            window.draw(title);
+            window.draw(instructions);
+            window.display();
         }
     }
 
-    void MostrarPantallaFin() {
-        sf::RenderWindow ventanaFin(sf::VideoMode(800, 600), "FIN DEL JUEGO");
-
-        sf::Font fuente;
-        if (!fuente.loadFromFile("assets/fonts/Platinum Sign.ttf")) {
-            throw std::runtime_error("No se pudo cargar la fuente");
-        }
-
-        sf::Text textoFin("Juego Terminado", fuente, 50);
-        textoFin.setFillColor(sf::Color::Red);
-        textoFin.setPosition(200, 250);
-
-        while (ventanaFin.isOpen()) {
-            sf::Event evento;
-            while (ventanaFin.pollEvent(evento)) {
-                if (evento.type == sf::Event::Closed) {
-                    ventanaFin.close();
-                }
+    // Genera obstáculos en todas las filas intermedias, alternando dirección y cantidad según el nivel
+    void GenerarNivelCrossyRoad() {
+        int filasConObstaculos = nivel.GetGridHeight() - 2; // No en la primera ni última fila
+        int baseObstaculos = 3 + (level / 2); // Aumenta con el nivel
+        nivel.GetObstaculos().clear();
+        for (int fila = 1; fila < nivel.GetGridHeight() - 1; ++fila) {
+            int cantidad = baseObstaculos + (rand() % 2); // Un poco de variación
+            int direction = (fila % 2 == 0) ? 1 : -1;
+            for (int i = 0; i < cantidad; ++i) {
+                int x = rand() % nivel.GetGridWidth();
+                nivel.GetObstaculos().emplace_back("car", x, fila, direction);
             }
-
-            ventanaFin.clear();
-            ventanaFin.draw(textoFin);
-            ventanaFin.display();
         }
     }
 };
