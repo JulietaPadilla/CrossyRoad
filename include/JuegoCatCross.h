@@ -58,10 +58,10 @@ public:
             window.draw(instructions);
             window.display();
         }
-        // Inicializar jugador y nivel
+        // Eliminar pantalla de inicio duplicada
         personaje.Reiniciar(GRID_COLS / 2, GRID_ROWS - 1);
         nivel = Nivel(GRID_COLS, GRID_ROWS);
-        GenerarNivelCrossyRoad();
+        nivel.GenerarObstaculosAvanzado(level);
         lastPlayerRow = personaje.GetGridY();
         while (window.isOpen()) {
             sf::Event event;
@@ -72,19 +72,24 @@ public:
             }
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
                 personaje.MoverArriba();
-                sf::sleep(sf::milliseconds(120));
+                // Esperar hasta que se suelte la tecla para evitar múltiples movimientos
+                while (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {}
+                sf::sleep(sf::milliseconds(40));
             }
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
                 personaje.MoverAbajo(GRID_ROWS - 1);
-                sf::sleep(sf::milliseconds(120));
+                while (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {}
+                sf::sleep(sf::milliseconds(40));
             }
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
                 personaje.MoverIzquierda();
-                sf::sleep(sf::milliseconds(120));
+                while (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {}
+                sf::sleep(sf::milliseconds(40));
             }
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
                 personaje.MoverDerecha(GRID_COLS - 1);
-                sf::sleep(sf::milliseconds(120));
+                while (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {}
+                sf::sleep(sf::milliseconds(40));
             }
             if (personaje.GetGridY() < lastPlayerRow) {
                 level++;
@@ -92,14 +97,11 @@ public:
                 lastPlayerRow = personaje.GetGridY();
                 if (personaje.GetGridY() == 0) {
                     personaje.Reiniciar(GRID_COLS / 2, GRID_ROWS - 1);
-                    GenerarNivelCrossyRoad();
+                    nivel.GenerarObstaculosAvanzado(level);
                     lastPlayerRow = personaje.GetGridY();
                 }
             }
-            if (obstacleClock.getElapsedTime().asSeconds() > obstacleInterval) {
-                nivel.ActualizarObstaculos();
-                obstacleClock.restart();
-            }
+            nivel.ActualizarObstaculosAvanzado();
             bool collisionDetected = false;
             for (auto& obstaculo : nivel.GetObstaculos()) {
                 if (personaje.GetGridX() == obstaculo.GetGridX() && personaje.GetGridY() == obstaculo.GetGridY()) {
