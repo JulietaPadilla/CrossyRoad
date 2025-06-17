@@ -58,10 +58,13 @@ public:
             window.draw(instructions);
             window.display();
         }
-        // Eliminar pantalla de inicio duplicada
+        
+        // Pantalla de inicio SOLO debe llamarse desde main, no aquí
+        // --- INICIO DEL JUEGO ---
         personaje.Reiniciar(GRID_COLS / 2, GRID_ROWS - 1);
         nivel = Nivel(GRID_COLS, GRID_ROWS);
-        nivel.GenerarObstaculosAvanzado(level);
+        // Dificultad baja al iniciar
+        nivel.GenerarObstaculosAvanzado(1);
         lastPlayerRow = personaje.GetGridY();
         while (window.isOpen()) {
             sf::Event event;
@@ -77,7 +80,6 @@ public:
                 sf::sleep(sf::milliseconds(40));
             }
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
-                personaje.MoverAbajo(GRID_ROWS - 1);
                 while (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {}
                 sf::sleep(sf::milliseconds(40));
             }
@@ -93,11 +95,13 @@ public:
             }
             if (personaje.GetGridY() < lastPlayerRow) {
                 level++;
-                obstacleInterval = std::max(0.08f, obstacleInterval - 0.03f);
+                // Aumenta dificultad SOLO al avanzar de nivel
+                obstacleInterval = std::max(0.06f, obstacleInterval - 0.015f);
                 lastPlayerRow = personaje.GetGridY();
                 if (personaje.GetGridY() == 0) {
                     personaje.Reiniciar(GRID_COLS / 2, GRID_ROWS - 1);
-                    nivel.GenerarObstaculosAvanzado(level);
+                    nivel = Nivel(GRID_COLS, GRID_ROWS);
+                    nivel.GenerarObstaculosAvanzado(level); // dificultad ajustada por nivel solo al avanzar
                     lastPlayerRow = personaje.GetGridY();
                 }
             }
@@ -158,18 +162,4 @@ public:
         }
     }
 
-    // Genera obstáculos en todas las filas intermedias, alternando dirección y cantidad según el nivel
-    void GenerarNivelCrossyRoad() {
-        int filasConObstaculos = nivel.GetGridHeight() - 2; // No en la primera ni última fila
-        int baseObstaculos = 3 + (level / 2); // Aumenta con el nivel
-        nivel.GetObstaculos().clear();
-        for (int fila = 1; fila < nivel.GetGridHeight() - 1; ++fila) {
-            int cantidad = baseObstaculos + (rand() % 2); // Un poco de variación
-            int direction = (fila % 2 == 0) ? 1 : -1;
-            for (int i = 0; i < cantidad; ++i) {
-                int x = rand() % nivel.GetGridWidth();
-                nivel.GetObstaculos().emplace_back("car", x, fila, direction);
-            }
-        }
-    }
 };

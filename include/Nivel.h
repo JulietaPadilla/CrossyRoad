@@ -40,20 +40,31 @@ public:
         obstaculos.clear();
         std::random_device rd;
         std::mt19937 gen(rd());
-        std::uniform_real_distribution<float> velDist(0.22f, 0.38f); // velocidad más baja (más lento)
-        std::uniform_int_distribution<int> skipDist(0, 3); // 1 de cada 4 filas vacía
+        std::uniform_real_distribution<float> velDist(0.18f, 0.32f); // velocidad más variada
+        std::uniform_int_distribution<int> skipDist(0, 4); // 1 de cada 5 filas vacía (menos filas vacías)
         std::uniform_int_distribution<int> dirDist(0, 1);
-        std::uniform_int_distribution<int> sepDist(4, 6); // separación mayor
+        // Separación mínima y máxima más baja para más dificultad
+        int separacionMin = std::max(2, 4 + nivel / 3); // nunca menos de 2
+        int separacionMax = std::max(separacionMin, 5 + nivel / 2); // Asegura que separacionMax >= separacionMin
+        std::uniform_int_distribution<int> sepDist(separacionMin, separacionMax);
         for (int fila = 1; fila < gridHeight - 1; ++fila) {
-            bool tieneObstaculos = skipDist(gen) != 0; // 75% chance de tener obstáculos
+            // Más dispersión y aleatoriedad: 50% chance de fila vacía
+            bool tieneObstaculos = (rand() % 2 == 0);
             filaConObstaculos[fila] = tieneObstaculos;
             velocidadesPorFila[fila] = velDist(gen);
             temporizadoresPorFila[fila].restart();
             if (!tieneObstaculos) continue;
             int direction = dirDist(gen) == 0 ? 1 : -1;
-            int maxObstaculos = std::max(1, gridWidth / 3); // nunca más de un tercio de la fila
-            int cantidad = std::min(maxObstaculos, 2 + (nivel / 2)); // menos obstáculos por fila
-            int separacion = sepDist(gen);
+            int maxObstaculos = std::max(1, gridWidth / (separacionMin + 1));
+            // Dificultad y cantidad de obstáculos igual que al inicio, pero con un poco más
+            int cantidadRandom = 2 + (nivel / 3); // como antes, pero puedes subir a 2 + (nivel/3)
+            if (maxObstaculos < 1) maxObstaculos = 1;
+            if (cantidadRandom < 1) cantidadRandom = 1;
+            int cantidadExtra = gen() % 2;
+            int cantidadTmp = cantidadRandom + cantidadExtra;
+            int cantidad = (maxObstaculos < cantidadTmp) ? maxObstaculos : cantidadTmp;
+            // Mucha dispersión: separación mínima alta y aleatoria
+            int separacion = std::max(8, sepDist(gen) + (rand() % 4));
             int start = gen() % gridWidth;
             for (int i = 0; i < cantidad; ++i) {
                 int x = (start + i * separacion) % gridWidth;
