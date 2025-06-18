@@ -1,6 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "Obstaculo.h"
+#include <Obstaculo.h>
 #include <string>
 #include <vector>
 #include <random>

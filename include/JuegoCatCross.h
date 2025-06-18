@@ -19,6 +19,7 @@ private:
     float obstacleInterval = 0.35f;
     int lastPlayerRow;
     sf::Clock obstacleClock;
+    Puntaje puntaje; // Puntaje del juego
 public:
     void IniciarJuego() {
         const int WINDOW_WIDTH = 800;
@@ -30,16 +31,18 @@ public:
         srand(static_cast<unsigned>(time(0)));
         sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Crossy Road");
         sf::Font font;
-        if (!font.loadFromFile("assets/fonts/Platinum Sign.ttf")) {
+        if (!font.loadFromFile("assets/fonts/1up.ttf")) {
             std::cerr << "Error: No se pudo cargar la fuente." << std::endl;
             return;
         }
         sf::Text title("CROSSY ROAD", font, 50);
-        title.setFillColor(sf::Color::White);
-        title.setPosition(WINDOW_WIDTH / 2 - 150, WINDOW_HEIGHT / 2 - 100);
-        sf::Text instructions("Presiona Enter para comenzar", font, 30);
-        instructions.setFillColor(sf::Color::White);
-        instructions.setPosition(WINDOW_WIDTH / 2 - 200, WINDOW_HEIGHT / 2);
+        sf::FloatRect titleBounds = title.getLocalBounds();
+        title.setOrigin(titleBounds.width / 2, titleBounds.height / 2);
+        title.setPosition(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - 100);
+        sf::Text instructions("PRESIONA ENTER PARA COMENZAR\nESC PARA SALIR", font, 30);
+        sf::FloatRect instrBounds = instructions.getLocalBounds();
+        instructions.setOrigin(instrBounds.width / 2, instrBounds.height / 2);
+        instructions.setPosition(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
         while (window.isOpen()) {
             sf::Event event;
             bool startGame = false;
@@ -50,6 +53,10 @@ public:
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) {
                     startGame = true;
                     break;
+                }
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+                    window.close();
+                    return;
                 }
             }
             if (startGame) break;
@@ -66,6 +73,7 @@ public:
         // Dificultad baja al iniciar
         nivel.GenerarObstaculosAvanzado(1);
         lastPlayerRow = personaje.GetGridY();
+        puntaje.Reiniciar(); // Reinicia el puntaje al iniciar el juego
         while (window.isOpen()) {
             sf::Event event;
             while (window.pollEvent(event)) {
@@ -78,6 +86,7 @@ public:
                 // Esperar hasta que se suelte la tecla para evitar múltiples movimientos
                 while (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {}
                 sf::sleep(sf::milliseconds(40));
+                puntaje.Aumentar(1); // Suma puntaje al avanzar
             }
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
                 while (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {}
@@ -117,11 +126,13 @@ public:
                 std::cout << "Game Over!" << std::endl;
                 break;
             }
+            personaje.ActualizarAnimacion();
             window.clear();
-            window.draw(personaje.GetShape());
+            window.draw(personaje.GetSprite());
             for (auto& obstaculo : nivel.GetObstaculos()) {
                 window.draw(obstaculo.GetShape());
             }
+            puntaje.Dibujar(window);
             window.display();
         }
         std::cout << "Debug: Juego terminado." << std::endl;
@@ -137,11 +148,13 @@ public:
             return;
         }
         sf::Text title("CROSSY ROAD", font, 50);
-        title.setFillColor(sf::Color::White);
-        title.setPosition(WINDOW_WIDTH / 2 - 150, WINDOW_HEIGHT / 2 - 100);
+        sf::FloatRect titleBounds = title.getLocalBounds();
+        title.setOrigin(titleBounds.width / 2, titleBounds.height / 2);
+        title.setPosition(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - 100);
         sf::Text instructions("Presiona Enter para comenzar", font, 30);
-        instructions.setFillColor(sf::Color::White);
-        instructions.setPosition(WINDOW_WIDTH / 2 - 200, WINDOW_HEIGHT / 2);
+        sf::FloatRect instrBounds = instructions.getLocalBounds();
+        instructions.setOrigin(instrBounds.width / 2, instrBounds.height / 2);
+        instructions.setPosition(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
         while (window.isOpen()) {
             sf::Event event;
             bool startGame = false;

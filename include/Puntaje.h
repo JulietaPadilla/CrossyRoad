@@ -18,15 +18,18 @@ public:
             throw std::runtime_error("No se pudo cargar la fuente para el puntaje");
         }
         texto.setFont(fuente);
-        texto.setCharacterSize(24);
+        texto.setCharacterSize(32); // Aumenta el tamaño de la letra
         texto.setFillColor(sf::Color::White);
-        texto.setPosition(10, 10);
+        texto.setOutlineColor(sf::Color::Black); // Añade borde negro
+        texto.setOutlineThickness(2); // Grosor del borde
+        texto.setPosition(20, 20); // Posición más visible
+        texto.setString("PUNTAJE: 0"); // Inicializa el texto
     }
 
     // Actualizar puntaje
     void Aumentar(int cantidad) { 
         valor += cantidad; 
-        texto.setString("Puntaje: " + std::to_string(valor));
+        texto.setString("PUNTAJE: " + std::to_string(valor));
         if (valor > maximo) maximo = valor;
     }
     void Reiniciar() { valor = 0; }
