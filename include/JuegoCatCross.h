@@ -39,7 +39,7 @@ public:
         sf::FloatRect titleBounds = title.getLocalBounds();
         title.setOrigin(titleBounds.width / 2, titleBounds.height / 2);
         title.setPosition(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - 100);
-        sf::Text instructions("PRESIONA ENTER PARA COMENZAR\nESC PARA SALIR", font, 30);
+        sf::Text instructions("1.PRESIONA ENTER PARA COMENZAR\n2.ESC PARA SALIR", font, 30);
         sf::FloatRect instrBounds = instructions.getLocalBounds();
         instructions.setOrigin(instrBounds.width / 2, instrBounds.height / 2);
         instructions.setPosition(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
@@ -143,7 +143,7 @@ public:
         const int WINDOW_HEIGHT = 600;
         sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Crossy Road - Inicio");
         sf::Font font;
-        if (!font.loadFromFile("assets/fonts/Platinum Sign.ttf")) {
+        if (!font.loadFromFile("assets/fonts/1up.ttf")) {
             std::cerr << "Error: No se pudo cargar la fuente." << std::endl;
             return;
         }
