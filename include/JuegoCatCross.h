@@ -129,8 +129,11 @@ public:
             personaje.ActualizarAnimacion();
             window.clear();
             window.draw(personaje.GetSprite());
+            // Dibuja solo los obstáculos activos y siempre como sprite
             for (auto& obstaculo : nivel.GetObstaculos()) {
-                window.draw(obstaculo.GetShape());
+                if (obstaculo.EstaActivo()) {
+                    window.draw(obstaculo.GetSprite());
+                }
             }
             puntaje.Dibujar(window);
             window.display();
@@ -155,6 +158,7 @@ public:
         sf::FloatRect instrBounds = instructions.getLocalBounds();
         instructions.setOrigin(instrBounds.width / 2, instrBounds.height / 2);
         instructions.setPosition(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
+
         while (window.isOpen()) {
             sf::Event event;
             bool startGame = false;
@@ -166,6 +170,7 @@ public:
                     startGame = true;
                     break;
                 }
+                
             }
             if (startGame) break;
             window.clear();

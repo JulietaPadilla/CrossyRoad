@@ -40,35 +40,42 @@ public:
         obstaculos.clear();
         std::random_device rd;
         std::mt19937 gen(rd());
-        std::uniform_real_distribution<float> velDist(0.18f, 0.32f); // velocidad más variada
-        std::uniform_int_distribution<int> skipDist(0, 4); // 1 de cada 5 filas vacía (menos filas vacías)
-        std::uniform_int_distribution<int> dirDist(0, 1);
-        // Separación mínima y máxima más baja para más dificultad
-        int separacionMin = std::max(2, 4 + nivel / 3); // nunca menos de 2
-        int separacionMax = std::max(separacionMin, 5 + nivel / 2); // Asegura que separacionMax >= separacionMin
+        std::uniform_real_distribution<float> velDist(0.18f, 0.32f);
+        std::uniform_int_distribution<int> skipDist(0, 4);
+        // 0: bus, 1: bus_school, 2: ambulance, 3: police, 4: sedan, 5: taxi, 6: truckdark, 7: hotdog
+        std::uniform_int_distribution<int> tipoDist(0, 7);
+        int separacionMin = std::max(2, 4 + nivel / 3);
+        int separacionMax = std::max(separacionMin, 5 + nivel / 2);
         std::uniform_int_distribution<int> sepDist(separacionMin, separacionMax);
+        int direction = 1; // Todos los obstáculos van a la derecha
         for (int fila = 1; fila < gridHeight - 1; ++fila) {
-            // Más dispersión y aleatoriedad: 50% chance de fila vacía
             bool tieneObstaculos = (rand() % 2 == 0);
             filaConObstaculos[fila] = tieneObstaculos;
             velocidadesPorFila[fila] = velDist(gen);
             temporizadoresPorFila[fila].restart();
             if (!tieneObstaculos) continue;
-            int direction = dirDist(gen) == 0 ? 1 : -1;
             int maxObstaculos = std::max(1, gridWidth / (separacionMin + 1));
-            // Dificultad y cantidad de obstáculos igual que al inicio, pero con un poco más
-            int cantidadRandom = 2 + (nivel / 3); // como antes, pero puedes subir a 2 + (nivel/3)
+            int cantidadRandom = 2 + (nivel / 3);
             if (maxObstaculos < 1) maxObstaculos = 1;
             if (cantidadRandom < 1) cantidadRandom = 1;
             int cantidadExtra = gen() % 2;
             int cantidadTmp = cantidadRandom + cantidadExtra;
             int cantidad = (maxObstaculos < cantidadTmp) ? maxObstaculos : cantidadTmp;
-            // Mucha dispersión: separación mínima alta y aleatoria
             int separacion = std::max(8, sepDist(gen) + (rand() % 4));
             int start = gen() % gridWidth;
             for (int i = 0; i < cantidad; ++i) {
                 int x = (start + i * separacion) % gridWidth;
-                obstaculos.emplace_back("car", x, fila, direction);
+                std::string tipo;
+                int tipoNum = tipoDist(gen);
+                if (tipoNum == 0) tipo = "bus";
+                else if (tipoNum == 1) tipo = "bus_school";
+                else if (tipoNum == 2) tipo = "ambulance";
+                else if (tipoNum == 3) tipo = "police";
+                else if (tipoNum == 4) tipo = "sedan";
+                else if (tipoNum == 5) tipo = "taxi";
+                else if (tipoNum == 6) tipo = "truckdark";
+                else tipo = "hotdog";
+                obstaculos.emplace_back(tipo, x, fila, direction);
             }
         }
     }
