@@ -12,7 +12,7 @@ private:
     sf::Texture textura;
     sf::Sprite sprite;
     int currentFrame = 0;
-    int numFrames = 4;
+    int numFrames = 7;
     int frameWidth = 32;
     int frameHeight = 32;
     sf::Clock animClock;
@@ -21,7 +21,7 @@ private:
 
 public:
     Gatito() : nombre("Gatito"), gridX(0), gridY(0), vidas(3), energia(100) {
-        textura.loadFromFile("assets/images/obstaculo2.png");
+        textura.loadFromFile("assets/images/PirateCat1.png");
         sprite.setTexture(textura);
         sprite.setTextureRect(sf::IntRect(0, 0, frameWidth, frameHeight));
         sprite.setScale(1.5f, 1.5f); // Ajusta la escala para 32x32 a 48x48

@@ -78,6 +78,17 @@ public:
         sf::Clock inputClock; // Reloj para controlar el cooldown de movimiento
         // Estados previos de las teclas
         bool prevUp = false, prevDown = false, prevLeft = false, prevRight = false;
+        // Cargar textura y sprite de fondo
+        sf::Texture backgroundTexture;
+        if (!backgroundTexture.loadFromFile("assets/images/fondo_juego.jpg")) {
+            std::cerr << "Error: No se pudo cargar la imagen de fondo." << std::endl;
+            return;
+        }
+        sf::Sprite backgroundSprite(backgroundTexture);
+        backgroundSprite.setScale(
+            float(WINDOW_WIDTH) / backgroundTexture.getSize().x,
+            float(WINDOW_HEIGHT) / backgroundTexture.getSize().y
+        );
         while (window.isOpen()) {
             sf::Event event;
             while (window.pollEvent(event)) {
@@ -146,9 +157,10 @@ public:
             }
             personaje.ActualizarAnimacion();
             window.clear();
+            window.draw(backgroundSprite); // Dibuja el fondo primero
             window.draw(personaje.GetSprite());
             for (auto& obstaculo : nivel.GetObstaculos()) {
-                window.draw(obstaculo.GetShape());
+                window.draw(obstaculo.GetSprite()); // Dibuja el sprite del obstáculo
             }
             puntaje.Dibujar(window);
             window.display();
