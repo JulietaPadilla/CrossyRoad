@@ -35,11 +35,11 @@ public:
             std::cerr << "Error: No se pudo cargar la fuente." << std::endl;
             return;
         }
-        sf::Text title("CROSSY ROAD", font, 50);
+        sf::Text title("CAT ROAD", font, 50);
         sf::FloatRect titleBounds = title.getLocalBounds();
         title.setOrigin(titleBounds.width / 2, titleBounds.height / 2);
         title.setPosition(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - 100);
-        sf::Text instructions("1.PRESIONA ENTER PARA COMENZAR\n2.ESC PARA SALIR", font, 30);
+        sf::Text instructions("PRESIONA ENTER PARA COMENZAR\nESC PARA SALIR", font, 30);
         sf::FloatRect instrBounds = instructions.getLocalBounds();
         instructions.setOrigin(instrBounds.width / 2, instrBounds.height / 2);
         instructions.setPosition(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
@@ -74,6 +74,10 @@ public:
         nivel.GenerarObstaculosAvanzado(1);
         lastPlayerRow = personaje.GetGridY();
         puntaje.Reiniciar(); // Reinicia el puntaje al iniciar el juego
+       
+        sf::Clock inputClock; // Reloj para controlar el cooldown de movimiento
+        // Estados previos de las teclas
+        bool prevUp = false, prevDown = false, prevLeft = false, prevRight = false;
         while (window.isOpen()) {
             sf::Event event;
             while (window.pollEvent(event)) {
@@ -81,26 +85,35 @@ public:
                     window.close();
                 }
             }
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+            // Detectar flanco de bajada para cada tecla
+            bool currUp = sf::Keyboard::isKeyPressed(sf::Keyboard::Up);
+            bool currDown = sf::Keyboard::isKeyPressed(sf::Keyboard::Down);
+            bool currLeft = sf::Keyboard::isKeyPressed(sf::Keyboard::Left);
+            bool currRight = sf::Keyboard::isKeyPressed(sf::Keyboard::Right);
+            bool moved = false;
+            if (currUp && !prevUp) {
                 personaje.MoverArriba();
-                // Esperar hasta que se suelte la tecla para evitar múltiples movimientos
-                while (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {}
-                sf::sleep(sf::milliseconds(40));
-                puntaje.Aumentar(1); // Suma puntaje al avanzar
+                puntaje.Aumentar(1);
+                moved = true;
             }
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
-                while (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {}
-                sf::sleep(sf::milliseconds(40));
+            if (currDown && !prevDown) {
+                personaje.MoverAbajo(GRID_ROWS - 1);
+                moved = true;
             }
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+            if (currLeft && !prevLeft) {
                 personaje.MoverIzquierda();
-                while (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {}
-                sf::sleep(sf::milliseconds(40));
+                moved = true;
             }
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+            if (currRight && !prevRight) {
                 personaje.MoverDerecha(GRID_COLS - 1);
-                while (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {}
-                sf::sleep(sf::milliseconds(40));
+                moved = true;
+            }
+            prevUp = currUp;
+            prevDown = currDown;
+            prevLeft = currLeft;
+            prevRight = currRight;
+            if (moved) {
+                inputClock.restart();
             }
             if (personaje.GetGridY() < lastPlayerRow) {
                 level++;
@@ -117,7 +130,12 @@ public:
             nivel.ActualizarObstaculosAvanzado();
             bool collisionDetected = false;
             for (auto& obstaculo : nivel.GetObstaculos()) {
-                if (personaje.GetGridX() == obstaculo.GetGridX() && personaje.GetGridY() == obstaculo.GetGridY()) {
+                int obsX = obstaculo.GetGridX();
+                int obsY = obstaculo.GetGridY();
+                int obsLargo = obstaculo.GetLargo();
+                if (personaje.GetGridY() == obsY &&
+                    personaje.GetGridX() >= obsX &&
+                    personaje.GetGridX() < obsX + obsLargo) {
                     collisionDetected = true;
                     break;
                 }
@@ -129,11 +147,8 @@ public:
             personaje.ActualizarAnimacion();
             window.clear();
             window.draw(personaje.GetSprite());
-            // Dibuja solo los obstáculos activos y siempre como sprite
             for (auto& obstaculo : nivel.GetObstaculos()) {
-                if (obstaculo.EstaActivo()) {
-                    window.draw(obstaculo.GetSprite());
-                }
+                window.draw(obstaculo.GetShape());
             }
             puntaje.Dibujar(window);
             window.display();
@@ -146,7 +161,7 @@ public:
         const int WINDOW_HEIGHT = 600;
         sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Crossy Road - Inicio");
         sf::Font font;
-        if (!font.loadFromFile("assets/fonts/1up.ttf")) {
+        if (!font.loadFromFile("assets/fonts/Platinum Sign.ttf")) {
             std::cerr << "Error: No se pudo cargar la fuente." << std::endl;
             return;
         }
@@ -158,7 +173,6 @@ public:
         sf::FloatRect instrBounds = instructions.getLocalBounds();
         instructions.setOrigin(instrBounds.width / 2, instrBounds.height / 2);
         instructions.setPosition(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
-
         while (window.isOpen()) {
             sf::Event event;
             bool startGame = false;
@@ -170,7 +184,6 @@ public:
                     startGame = true;
                     break;
                 }
-                
             }
             if (startGame) break;
             window.clear();
