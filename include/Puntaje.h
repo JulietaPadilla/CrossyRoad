@@ -29,12 +29,13 @@ public:
     // Actualizar puntaje
     void Aumentar(int cantidad) { 
         valor += cantidad; 
-        texto.setString("PUNTAJE: " + std::to_string(valor));
+        texto.setString("PUNTAJE " + std::to_string(valor));
         if (valor > maximo) maximo = valor;
     }
     void Reiniciar() { valor = 0; }
     int ObtenerValor() const { return valor; }
     int ObtenerMaximo() const { return maximo; }
+    void SetMaximo(int m) { maximo = m; }
 
     // Guardar y cargar puntaje más alto
     void GuardarMaximo(const std::string& archivo) {
