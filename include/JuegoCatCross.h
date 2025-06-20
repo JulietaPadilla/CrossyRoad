@@ -37,14 +37,16 @@ public:
             std::cerr << "Error: No se pudo cargar la fuente." << std::endl;
             return;
         }
-        sf::Text title("CROSSY ROAD", font, 50);
+        sf::Text title("CROSSY ROAD", font, 100);
         sf::FloatRect titleBounds = title.getLocalBounds();
         title.setOrigin(titleBounds.width / 2, titleBounds.height / 2);
-        title.setPosition(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - 100);
-        sf::Text instructions("1.PRESIONA ENTER PARA COMENZAR\n2.ESC PARA SALIR", font, 30);
+        title.setPosition(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - 200);
+        title.setFillColor(sf::Color::Black);
+        sf::Text instructions("- PRESIONA ENTER PARA COMENZAR\n - ESC PARA SALIR", font, 40);
         sf::FloatRect instrBounds = instructions.getLocalBounds();
         instructions.setOrigin(instrBounds.width / 2, instrBounds.height / 2);
-        instructions.setPosition(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
+        instructions.setPosition(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - 80);
+        instructions.setFillColor(sf::Color::Black);
         // Cargar fondo para el menú y pantallas previas
         sf::Texture fondoMenuTexture;
         if (!fondoMenuTexture.loadFromFile("assets/images/fondo_juego2.jpeg")) {
@@ -84,13 +86,13 @@ public:
         // --- SEGUNDA PANTALLA: Ingreso de nombre de usuario ---
         std::string nombreUsuario = "";
         bool nombreIngresado = false;
-        sf::Text inputText("", font, 28);
-        inputText.setFillColor(sf::Color::Yellow);
-        sf::Text prompt("Ingresa tu nombre y presiona Enter:", font, 28);
-        prompt.setFillColor(sf::Color::White);
+        sf::Text inputText("", font, 40);
+        inputText.setFillColor(sf::Color::Black);
+        sf::Text prompt(">> Ingresa tu nombre y presiona Enter:", font, 50);
+        prompt.setFillColor(sf::Color::Black);
         sf::FloatRect promptBounds = prompt.getLocalBounds();
         prompt.setOrigin(promptBounds.width / 2, promptBounds.height / 2);
-        prompt.setPosition(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 + 20);
+        prompt.setPosition(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 - 100);
         inputText.setOrigin(0, 0);
         while (window.isOpen() && !nombreIngresado) {
             sf::Event event;
@@ -112,7 +114,7 @@ public:
             inputText.setString(nombreUsuario);
             sf::FloatRect inputBounds = inputText.getLocalBounds();
             inputText.setOrigin(inputBounds.width / 2, 0);
-            inputText.setPosition(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 + 60);
+            inputText.setPosition(WINDOW_WIDTH / 2 + 200, WINDOW_HEIGHT / 2 - 50);
             window.clear();
             window.draw(fondoMenuSprite);
             window.draw(title);
@@ -123,9 +125,9 @@ public:
         usuario.SetNombre(nombreUsuario);
         usuario.CargarPuntuacionMaxima("puntaje_" + nombreUsuario + ".dat");
         // Mostrar puntaje máximo antes de iniciar el juego
-        sf::Text maxScoreText("Puntaje maximo: " + std::to_string(usuario.ObtenerPuntuacionMaxima()), font, 28);
-        maxScoreText.setFillColor(sf::Color::Cyan);
-        maxScoreText.setPosition(WINDOW_WIDTH / 2 - 180, WINDOW_HEIGHT / 2 + 100);
+        sf::Text maxScoreText("Puntaje maximo: " + std::to_string(usuario.ObtenerPuntuacionMaxima()), font, 40);
+        maxScoreText.setFillColor(sf::Color::Black);
+        maxScoreText.setPosition(WINDOW_WIDTH / 2 + 80, WINDOW_HEIGHT / 2 + 30);
         bool mostrarMax = true;
         while (window.isOpen() && mostrarMax) {
             sf::Event event;
@@ -164,6 +166,9 @@ public:
             float(WINDOW_WIDTH) / juegoFondoTexture.getSize().x,
             float(WINDOW_HEIGHT) / juegoFondoTexture.getSize().y
         );
+        sf::Clock inputClock; // Reloj para controlar el cooldown de movimiento
+        // Estados previos de las teclas
+        bool prevUp = false, prevDown = false, prevLeft = false, prevRight = false;
         while (window.isOpen()) {
             sf::Event event;
             while (window.pollEvent(event)) {
@@ -171,26 +176,35 @@ public:
                     window.close();
                 }
             }
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+            // Detectar flanco de bajada para cada tecla
+            bool currUp = sf::Keyboard::isKeyPressed(sf::Keyboard::Up);
+            bool currDown = sf::Keyboard::isKeyPressed(sf::Keyboard::Down);
+            bool currLeft = sf::Keyboard::isKeyPressed(sf::Keyboard::Left);
+            bool currRight = sf::Keyboard::isKeyPressed(sf::Keyboard::Right);
+            bool moved = false;
+            if (currUp && !prevUp) {
                 personaje.MoverArriba();
-                while (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {}
-                sf::sleep(sf::milliseconds(40));
                 puntaje.Aumentar(1);
+                moved = true;
             }
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+            if (currDown && !prevDown) {
                 personaje.MoverAbajo(GRID_ROWS - 1);
-                while (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {}
-                sf::sleep(sf::milliseconds(40));
+                moved = true;
             }
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+            if (currLeft && !prevLeft) {
                 personaje.MoverIzquierda();
-                while (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {}
-                sf::sleep(sf::milliseconds(40));
+                moved = true;
             }
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+            if (currRight && !prevRight) {
                 personaje.MoverDerecha(GRID_COLS - 1);
-                while (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {}
-                sf::sleep(sf::milliseconds(40));
+                moved = true;
+            }
+            prevUp = currUp;
+            prevDown = currDown;
+            prevLeft = currLeft;
+            prevRight = currRight;
+            if (moved) {
+                inputClock.restart();
             }
             if (personaje.GetGridY() < lastPlayerRow) {
                 level++;
@@ -206,7 +220,12 @@ public:
             nivel.ActualizarObstaculosAvanzado();
             bool collisionDetected = false;
             for (auto& obstaculo : nivel.GetObstaculos()) {
-                if (personaje.GetGridX() == obstaculo.GetGridX() && personaje.GetGridY() == obstaculo.GetGridY()) {
+                int obsX = obstaculo.GetGridX();
+                int obsY = obstaculo.GetGridY();
+                int obsLargo = obstaculo.GetLargo();
+                if (personaje.GetGridY() == obsY &&
+                    personaje.GetGridX() >= obsX &&
+                    personaje.GetGridX() < obsX + obsLargo) {
                     collisionDetected = true;
                     break;
                 }
