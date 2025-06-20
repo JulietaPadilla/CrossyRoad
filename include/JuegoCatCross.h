@@ -2,7 +2,6 @@
 #include <Gatito.h>
 #include <Nivel.h>
 #include <Sonido.h>
-#include <Ventana.h>
 #include <Puntaje.h>
 #include <SFML/Graphics.hpp>
 #include <Coleccionable.h>
@@ -16,10 +15,10 @@ class JuegoCatCross {
 private:
     Gatito personaje;
     Nivel nivel;
-    int level = 1;
-    float obstacleInterval = 0.35f;
-    int lastPlayerRow;
-    sf::Clock obstacleClock;
+    int nivelActual = 1;
+    float intervaloObstaculo = 0.35f;
+    int ultimaFilaJugador;
+    sf::Clock relojObstaculo;
     Puntaje puntaje; // Puntaje del juego
     Usuario usuario; // Usuario actual
 public:
@@ -123,7 +122,9 @@ public:
             window.display();
         }
         usuario.SetNombre(nombreUsuario);
-        usuario.CargarPuntuacionMaxima("puntaje_" + nombreUsuario + ".dat");
+        // Cargar puntaje máximo del usuario
+        std::string archivoPuntaje = "puntaje_" + nombreUsuario + ".dat";
+        usuario.CargarPuntuacionMaxima(archivoPuntaje);
         // Mostrar puntaje máximo antes de iniciar el juego
         sf::Text maxScoreText("Puntaje maximo: " + std::to_string(usuario.ObtenerPuntuacionMaxima()), font, 40);
         maxScoreText.setFillColor(sf::Color::Black);
@@ -153,7 +154,7 @@ public:
         personaje.Reiniciar(GRID_COLS / 2, GRID_ROWS - 1);
         nivel = Nivel(GRID_COLS, GRID_ROWS);
         nivel.GenerarObstaculosAvanzado(1);
-        lastPlayerRow = personaje.GetGridY();
+        ultimaFilaJugador = personaje.GetGridY();
         puntaje.Reiniciar();
         // Cargar fondo para el juego principal
         sf::Texture juegoFondoTexture;
@@ -206,15 +207,15 @@ public:
             if (moved) {
                 inputClock.restart();
             }
-            if (personaje.GetGridY() < lastPlayerRow) {
-                level++;
-                obstacleInterval = std::max(0.06f, obstacleInterval - 0.015f);
-                lastPlayerRow = personaje.GetGridY();
+            if (personaje.GetGridY() < ultimaFilaJugador) {
+                nivelActual++;
+                intervaloObstaculo = std::max(0.06f, intervaloObstaculo - 0.015f);
+                ultimaFilaJugador = personaje.GetGridY();
                 if (personaje.GetGridY() == 0) {
                     personaje.Reiniciar(GRID_COLS / 2, GRID_ROWS - 1);
                     nivel = Nivel(GRID_COLS, GRID_ROWS);
-                    nivel.GenerarObstaculosAvanzado(level);
-                    lastPlayerRow = personaje.GetGridY();
+                    nivel.GenerarObstaculosAvanzado(nivelActual);
+                    ultimaFilaJugador = personaje.GetGridY();
                 }
             }
             nivel.ActualizarObstaculosAvanzado();
@@ -246,8 +247,9 @@ public:
             puntaje.Dibujar(window);
             window.display();
         }
+        // Al final del juego, guardar puntaje máximo
         usuario.SetPuntuacionMaxima(puntaje.ObtenerMaximo());
-        usuario.GuardarPuntuacionMaxima("puntaje_" + usuario.GetNombre() + ".dat");
+        usuario.GuardarPuntuacionMaxima(archivoPuntaje);
         std::cout << "Debug: Juego terminado." << std::endl;
     }
 

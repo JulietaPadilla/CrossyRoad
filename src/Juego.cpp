@@ -4,7 +4,7 @@
 
 int main() {
     Sonido musica;
-    musica.reproducir(true); // Reproducir en loop
+    musica.Reproducir(true); // Reproducir en loop
 
     JuegoCatCross juego;
     //juego.MostrarPantallaInicio(); // Mostrar la pantalla de inicio

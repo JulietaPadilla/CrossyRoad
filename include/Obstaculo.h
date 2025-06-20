@@ -15,12 +15,11 @@ private:
     bool activo;
     sf::Sprite sprite;
     bool texturaCargada;
-    // Mapa estático para compartir texturas
     static std::map<int, sf::Texture> texturasCompartidas;
 
 public:
     Obstaculo(const std::string& t = "car", int x = 0, int y = 0, int dir = 1, int large=1)
-        : tipo(t), gridX(x), gridY(y), direction(dir),largo(large), activo(true), texturaCargada(false) {
+        : tipo(t), gridX(x), gridY(y), direction(dir), largo(large), activo(true), texturaCargada(false) {
         std::string ruta = "assets/images/obstaculo" + std::to_string(largo) + ".png";
         // Cargar textura solo una vez por largo
         auto it = texturasCompartidas.find(largo);

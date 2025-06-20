@@ -10,32 +10,32 @@ private:
 
 public:
     Sonido() : archivo("assets/Music/musica.mp3"), cargado(false) {
-        cargar(archivo);
+        Cargar(archivo);
     }
     Sonido(const std::string& archivo_) : archivo(archivo_), cargado(false) {
-        cargar(archivo_);
+        Cargar(archivo_);
     }
 
-    bool cargar(const std::string& archivo_) {
+    bool Cargar(const std::string& archivo_) {
         archivo = archivo_;
         cargado = music.openFromFile(archivo);
         return cargado;
     }
 
-    void reproducir(bool loop = false) {
+    void Reproducir(bool loop = false) {
         if (cargado) {
             music.setLoop(loop);
             music.play();
         }
     }
 
-    void detener() {
+    void Detener() {
         if (cargado) {
             music.stop();
         }
     }
 
-    bool estaReproduciendo() const {
+    bool EstaReproduciendo() const {
         return cargado && music.getStatus() == sf::Music::Playing;
     }
 };
