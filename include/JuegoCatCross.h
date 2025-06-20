@@ -156,6 +156,20 @@ public:
         nivel.GenerarObstaculosAvanzado(1);
         ultimaFilaJugador = personaje.GetGridY();
         puntaje.Reiniciar();
+        // --- INICIO MONEDAS ---
+        Coleccionable moneda5("moneda5", 5);
+        moneda5.CargarTextura("assets/images/moneda5.png");
+        Coleccionable moneda10("moneda10", 10);
+        moneda10.CargarTextura("assets/images/moneda10.png");
+        // Vector de posiciones de obstáculos para evitar superposición
+        std::vector<std::pair<int,int>> obstaculosGrid;
+        for (const auto& obs : nivel.GetObstaculos()) {
+            for (int l = 0; l < obs.GetLargo(); ++l) {
+                obstaculosGrid.push_back({obs.GetGridX() + l, obs.GetGridY()});
+            }
+        }
+        moneda5.ReaparecerAleatorio(GRID_COLS, GRID_ROWS, CELL_SIZE, personaje.GetGridX(), personaje.GetGridY(), obstaculosGrid);
+        moneda10.ReaparecerAleatorio(GRID_COLS, GRID_ROWS, CELL_SIZE, personaje.GetGridX(), personaje.GetGridY(), obstaculosGrid);
         // Cargar fondo para el juego principal
         sf::Texture juegoFondoTexture;
         if (!juegoFondoTexture.loadFromFile("assets/images/fondo_juego.jpeg")) {
@@ -207,6 +221,7 @@ public:
             if (moved) {
                 inputClock.restart();
             }
+            // Si el jugador avanza de nivel o reinicia, reubica las monedas
             if (personaje.GetGridY() < ultimaFilaJugador) {
                 nivelActual++;
                 intervaloObstaculo = std::max(0.06f, intervaloObstaculo - 0.015f);
@@ -216,6 +231,15 @@ public:
                     nivel = Nivel(GRID_COLS, GRID_ROWS);
                     nivel.GenerarObstaculosAvanzado(nivelActual);
                     ultimaFilaJugador = personaje.GetGridY();
+                    // Actualiza posiciones de obstáculos y monedas
+                    obstaculosGrid.clear();
+                    for (const auto& obs : nivel.GetObstaculos()) {
+                        for (int l = 0; l < obs.GetLargo(); ++l) {
+                            obstaculosGrid.push_back({obs.GetGridX() + l, obs.GetGridY()});
+                        }
+                    }
+                    moneda5.ReaparecerAleatorio(GRID_COLS, GRID_ROWS, CELL_SIZE, personaje.GetGridX(), personaje.GetGridY(), obstaculosGrid);
+                    moneda10.ReaparecerAleatorio(GRID_COLS, GRID_ROWS, CELL_SIZE, personaje.GetGridX(), personaje.GetGridY(), obstaculosGrid);
                 }
             }
             nivel.ActualizarObstaculosAvanzado();
@@ -243,6 +267,19 @@ public:
                 if (obstaculo.EstaActivo()) {
                     window.draw(obstaculo.GetSprite());
                 }
+            }
+            // --- MONEDAS: Dibujo y lógica de recolección ---
+            moneda5.Dibujar(window);
+            moneda10.Dibujar(window);
+            if (moneda5.ColisionaCon(personaje.GetGridX(), personaje.GetGridY())) {
+                puntaje.Aumentar(moneda5.GetValor());
+                moneda5.Recolectar();
+                moneda5.ReaparecerAleatorio(GRID_COLS, GRID_ROWS, CELL_SIZE, personaje.GetGridX(), personaje.GetGridY(), obstaculosGrid);
+            }
+            if (moneda10.ColisionaCon(personaje.GetGridX(), personaje.GetGridY())) {
+                puntaje.Aumentar(moneda10.GetValor());
+                moneda10.Recolectar();
+                moneda10.ReaparecerAleatorio(GRID_COLS, GRID_ROWS, CELL_SIZE, personaje.GetGridX(), personaje.GetGridY(), obstaculosGrid);
             }
             puntaje.Dibujar(window);
             window.display();
@@ -301,5 +338,6 @@ public:
             window.display();
         }
     }
+
 
 };
