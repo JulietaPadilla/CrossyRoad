@@ -1,6 +1,6 @@
 # CatRoad 🐱
 
-**Autor:** Julieta Padilla y Kevin Flores 
+**Autores:** Julieta Padilla y Kevin Flores 
 
 [![C++](https://img.shields.io/badge/C++-17-blue.svg)](https://isocpp.org/)
 [![SFML](https://img.shields.io/badge/SFML-2.x-green.svg)](https://www.sfml-dev.org/)
@@ -57,8 +57,25 @@ El proyecto está desarrollado sobre **MinGW64** utilizando **Msys2** y como edi
 3. Ejecuta el juego:
    ```bash
    make run'NombreEjecutable'
-
 ---
+
+## 📷 Capturas del juego
+
+### Funcionamiento del juego
+
+| Jugando            | Sistema de puntaje |
+|:------------------:|:------------------:|
+| <img src="assets/images/gameplay.png" width="400" height="300" alt="Gameplay"> | <img src="assets/images/score_display.png" width="400" height="300" alt="Puntaje"> |
+
+### Diferentes momentos del juego
+
+| Inicio del nivel      | Avanzando en el juego |
+|:---------------------:|:---------------------:|
+| <img src="assets/images/game_start.png" width="400" height="300" alt="Inicio"> | <img src="assets/images/game_progress.png" width="400" height="300" alt="Progreso"> |
+
+> **💡 Nota:** Actualmente el juego se cierra automáticamente al chocar con obstáculos. Una pantalla de Game Over será implementada en futuras versiones.
+---
+
 ## 🎮 Manual de usuario
 ### Menú principal
 
