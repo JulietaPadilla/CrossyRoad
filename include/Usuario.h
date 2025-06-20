@@ -12,7 +12,6 @@ private:
 public:
     Usuario() : nombre(""), puntuacionMaxima(0) {}
 
-    void IniciarSesion() {}
     void GuardarPuntuacionMaxima(const std::string& archivo) {
         // Solo usa el nombre de archivo, no agregues la ruta aquí
         std::ofstream out("assets/puntajes/" + archivo);
@@ -32,8 +31,8 @@ public:
             in.close();
         }
     }
-    void SetPuntuacionMaxima(int p) { puntuacionMaxima = p; }
-    void SetNombre(const std::string& n) { nombre = n; }
-    std::string GetNombre() const { return nombre; }
+    void ConfigurarPuntuacionMaxima(int p) { puntuacionMaxima = p; }
+    void ConfigurarNombre(const std::string& n) { nombre = n; }
+    std::string ObtenerNombre() const { return nombre; }
     int ObtenerPuntuacionMaxima() const { return puntuacionMaxima; }
 };

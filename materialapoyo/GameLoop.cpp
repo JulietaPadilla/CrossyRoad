@@ -4,7 +4,6 @@
 #include <cstdlib>
 #include <ctime>
 #include <JuegoCatCross.h>
-#include <Ventana.h>
 #include <Obstaculo.h>
 #include <Coleccionable.h>
 #include <Gatito.h>

@@ -3,22 +3,27 @@
 class Usuario {
     - nombre: string
     - puntuacionMaxima: int
-    + iniciarSesion()
-    + obtenerPuntuacionMaxima(): int
-}
-
-class Ventana {
-    - ancho: int
-    - alto: int
-    + mostrar()
-    + cerrar()
+    + GuardarPuntuacionMaxima(archivo: string)
+    + CargarPuntuacionMaxima(archivo: string)
+    + ConfigurarPuntuacionMaxima(p: int)
+    + ConfigurarNombre(n: string)
+    + ObtenerNombre(): string
+    + ObtenerPuntuacionMaxima(): int
 }
 
 class Puntaje {
     - valor: int
-    + aumentar(valor: int)
-    + reiniciar()
-    + obtenerValor(): int
+    - maximo: int
+    - fuente: sf::Font
+    - texto: sf::Text
+    + Aumentar(cantidad: int)
+    + Reiniciar()
+    + ObtenerValor(): int
+    + ObtenerMaximo(): int
+    + SetMaximo(m : int)
+    + GuardarMaximo(archivo: string)
+    + CargarMaximo(archivo: string)
+    + Dibujar(window: sf::RenderWindow)
 }
 
 class JuegoCatCross {
