@@ -140,10 +140,12 @@ class Coleccionable {
 
 JuegoCatCross *-- Gatito : tiene un
 JuegoCatCross *-- Nivel : tiene un
-JuegoCatCross --o Sonido : usa un
+main o-- Sonido : usa un
+main o-- JuegoCatCross : usa un
+Sonido -- JuegoCatCross
 JuegoCatCross *-- Puntaje : tiene un
 JuegoCatCross *-- Usuario : tiene un
 Nivel "1" *-- "*" Obstaculo : tiene muchos
-Nivel "1" *-- "*" Coleccionable : tiene muchos
+Nivel "1" *-- "2" Coleccionable : tiene 
 
 @enduml

@@ -1,57 +1,72 @@
-# CrossyRoad
+# CatRoad 🐱
 
 **Autor:** Julieta Padilla y Kevin Flores 
 
-## Descripción
+[![C++](https://img.shields.io/badge/C++-17-blue.svg)](https://isocpp.org/)
+[![SFML](https://img.shields.io/badge/SFML-2.x-green.svg)](https://www.sfml-dev.org/)
+[![License](https://img.shields.io/badge/license-Educational-orange.svg)]()
 
-CrossyRoad es un videojuego arcade inspirado en el clásico "Crossy Road", donde controlas a un gatito que debe cruzar, llenos de obstáculos, recolectando monedas y sumando puntos. El objetivo es avanzar la mayor cantidad de filas posible, evitando colisiones y superando tu propio récord.
+## 📖 Descripción
 
-## Características principales
+CatRoad es un videojuego arcade inspirado en el clásico "Crossy Road", donde controlas a un gatito que debe cruzar, llenos de obstáculos, recolectando monedas y sumando puntos. El objetivo es avanzar la mayor cantidad de filas posible, evitando colisiones y superando tu propio récord.
 
-- **Gráficos y sprites animados**: Personaje principal animado y obstáculos visuales.
-- **Obstáculos aleatorios**: barriles y otros elementos aparecen y se mueven de forma impredecible.
-- **Coleccionables**: Monedas de 5 y 10 puntos aparecen aleatoriamente en el mapa.
-- **Puntaje visible y persistente**: El puntaje se muestra en pantalla y se guarda el récord máximo por usuario.
-- **Registro de usuario**: Cada jugador ingresa su nombre y su récord se almacena individualmente.
-- **Música de fondo**: Sonido ambiente durante la partida.
-- **Menú de inicio**: Pantalla de bienvenida, ingreso de nombre y visualización de récord.
-- **Compatibilidad multiplataforma**: Funciona en Windows, macOS y Linux (requiere SFML).
+## ✨ Características principales
 
-## Prerequisitos
+- 🎮 **Gráficos y sprites animados**: Personaje principal animado y obstáculos visuales.
+- 🎲 **Obstáculos aleatorios**: barriles y otros elementos aparecen y se mueven de forma impredecible.
+- 💰 **Coleccionables**: Monedas de 5 y 10 puntos aparecen aleatoriamente en el mapa.
+- 📊 **Puntaje visible y persistente**: El puntaje se muestra en pantalla y se guarda el récord máximo por usuario.
+- 👤 **Registro de usuario**: Cada jugador ingresa su nombre y su récord se almacena individualmente.
+- 🎵 **Música de fondo**: Sonido ambiente durante la partida.
+- 🏠 **Menú de inicio**: Pantalla de bienvenida, ingreso de nombre y visualización de récord.
+- 🖥️ **Compatibilidad multiplataforma**: Funciona en Windows, macOS y Linux (requiere SFML).
+---
 
-[Instalar las herramientas necesarias](./docs/herramientas.md)
+## 🚀 Instalación y configuración
 
-[Instalar las Extensiones VSCode](./docs/extensiones.md)
+### Prerequisitos
 
-[Instalar las librerias](./docs/librerias.md)
+El proyecto está desarrollado sobre **MinGW64** utilizando **Msys2** y como editor se está utilizando **Visual Studio Code**.
 
+- [Instalar las herramientas necesarias](./docs/herramientas.md)
 
+- [Instalar las Extensiones VSCode](./docs/extensiones.md)
 
-## Manual de usuario
+- [Instalar las librerias](./docs/librerias.md)
 
-### Instalación y ejecución
-1. **Requisitos:**
-
-   - Tener instalado [SFML 2.x](https://www.sfml-dev.org/)
-   - Compilador C++ compatible con C++17
-
-2. **Compilación:**
-
-   - En terminal, navega a la carpeta del proyecto y ejecuta:
-     ```sh
-     make
-     ```
-3. **Ejecución:**
-
-Instalar todas las dependencias descritas arriba y dentro de una terminal de vscode ejecutar:
-
-> make run'NombreEjecutable'
+- [Clonar el repositorio](./docs/fork.md)
 
 
+
+### Requisitos del sistema:
+  - **SFML 2.x** - [Descargar aquí](https://www.sfml-dev.org/)
+  - **Compilador C++** compatible con C++17
+  - **Sistema operativo**: Windows, macOS o Linux
+
+### Compilación:
+  1. Navega a la carpeta del proyecto en terminal:
+   ```bash
+   cd CrossyRoad
+   ```
+
+2. Compila el proyecto:
+   ```bash
+   make
+   ```
+
+3. Ejecuta el juego:
+   ```bash
+   make run'NombreEjecutable'
+
+---
+## 🎮 Manual de usuario
 ### Menú principal
 
-![Pantalla de inicio](assets/images/Menuprincipal.png)
-![Segundo menu](assets/images/Segundomenu.png)
+| Pantalla de inicio | Segundo menú |
+|:-----------------:|:------------:|
+| ![Pantalla de inicio](assets/images/Menuprincipal.png) | ![Segundo menu](assets/images/Segundomenu.png) |
+
+### Navegación del menú
 
 - **Pantalla de bienvenida:**
 
@@ -67,53 +82,67 @@ Instalar todas las dependencias descritas arriba y dentro de una terminal de vsc
 
 
 
-### Cómo jugar
+### ¿Cómo jugar?
 
-- **Movimiento:**
-
-  - Usa las flechas del teclado (`↑`, `↓`, `←`, `→`) para mover al gatito por la cuadrícula.
-
-- **Objetivo:**
-
-  - Cruza la mayor cantidad de filas posibles sin chocar con obstáculos.
-  - Recolecta monedas de 5 y 10 puntos para aumentar tu puntaje.
-
-- **Game Over:**
-
-  - Si chocas con un obstáculo, aparece la pantalla de Game Over con opción de reiniciar (`Enter`) o salir (`Esc`).
+#### Controles
+| Tecla | Acción |
+|:-----:|:-------|
+| `↑` | Mover hacia arriba |
+| `↓` | Mover hacia abajo |
+| `←` | Mover hacia la izquierda |
+| `→` | Mover hacia la derecha |
+| `Enter` | Reiniciar (en Game Over) |
+| `Esc` | Salir del juego |
 
 
-### Elementos del juego
+#### Objetivo
+  1. **Cruza** la mayor cantidad de filas posibles sin chocar con obstáculos
+  2. **Recolecta** monedas para aumentar tu puntaje
+  3. **Supera** tu récord personal
 
-- **Obstáculos:**
+#### Game Over
 
-  - Barriles y otros elementos que se mueven horizontalmente por las filas.
-  ![Obstaculos](assets/images/Obstaculo3.png)
+  - Si chocas con un obstáculo, se termina el juego.
+---
+## 🎯 Elementos del juego
 
-- **Coleccionables:**
-
-  - Moneda dorada: +5 puntos
-  - Moneda plateada: +10 puntos
-  ![Coleccionables](assets/images/moneda5.png)
-  ![Coleccionables](assets/images/moneda10.png)
-
-- **Puntaje:**
-
-  - Se muestra en la esquina superior izquierda.
-  - El récord máximo se guarda por usuario en la carpeta `assets/puntajes/`.
+### Obstáculos
+![Obstáculos](assets/images/Obstaculo3.png)
+Barriles que se mueven horizontalmente por las filas.
 
 
-### Estructura de carpetas
+### Coleccionables
+| Moneda | Valor | Imagen |
+|:------:|:-----:|:------:|
+| Dorada | +5 puntos | ![Moneda 5](assets/images/moneda5.png) |
+| Plateada | +10 puntos | ![Moneda 10](assets/images/moneda10.png) |
 
-- `assets/` - Recursos del juego (imágenes, música, fuentes, puntajes)
-- `src/` - Código fuente principal
-- `include/` - Archivos de cabecera
-- `bin/` - Ejecutables generados
-- `docs/` - Diagramas y documentación
+### Sistema de Puntaje
+- Se muestra en la **esquina superior izquierda**
+- El récord máximo se guarda por usuario en `assets/puntajes/`
 
-## Guía rápida de Git y diagramas
+---
 
-### ¿Cómo clonar un repositorio?
+## 📁 Estructura de carpetas
+
+```
+CrossyRoad/
+├── assets/          # Recursos del juego
+│   ├── images/      # Sprites e imágenes
+│   ├── music/       # Música y efectos de sonido
+│   ├── fonts/       # Fuentes tipográficas
+│   └── puntajes/    # Records de usuarios
+├── src/             # Código fuente principal
+├── include/         # Archivos de cabecera (.h)
+├── bin/             # Ejecutables generados
+├── docs/            # Documentación y diagramas
+└── Makefile         # Configuración de compilación
+```
+---
+
+## 📚 Guía rápida de desarrollo de GitHub 
+
+### Clonar el repositorio
 
 1. Copia la URL del repositorio (por ejemplo, desde GitHub).
 2. Abre una terminal y ejecuta:
@@ -125,10 +154,10 @@ Instalar todas las dependencias descritas arriba y dentro de una terminal de vsc
    cd CrossyRoad
    ```
 
-### ¿Cómo crear tu propio repositorio?
+### Crear tu propio repositorio
 
 1. Crea una cuenta en [GitHub](https://github.com/) si no tienes una.
-2. Haz clic en "New repository" y sigue los pasos.
+2. Haz clic en **"New repository"** y sigue los pasos.
 3. Para subir tu proyecto local:
    ```sh
    git init
@@ -139,7 +168,7 @@ Instalar todas las dependencias descritas arriba y dentro de una terminal de vsc
    git push -u origin main
    ```
 
-### ¿Cómo realizar un diagrama de clases?
+### Crear diagramas de clases
 
 1. Puedes usar [PlantUML](https://plantuml.com/) para crear diagramas de clases fácilmente.
 2. Ejemplo básico de sintaxis (ver `docs/diagrama.puml`):
@@ -155,12 +184,34 @@ Instalar todas las dependencias descritas arriba y dentro de una terminal de vsc
    Gatito --> Obstaculo
    @enduml
    ```
-3. Para generar la imagen, puedes usar la extensión de PlantUML en VSCode o el sitio web oficial.
 
-### Créditos y licencias
-
-- Sprites, música y fuentes utilizados son para fines educativos.
-- Desarrollado por Julieta Padilla.
-
+> **Tip:** Puedes usar la extensión de PlantUML en VSCode para generar diagramas automáticamente. (Recuerda tener instalado Java para poder visualizarlo)
 ---
-¡Disfruta el reto y supera tu propio récord en CrossyRoad!
+
+## 🤝 Contribuir
+
+Las contribuciones son bienvenidas. Para contribuir:
+
+1. Haz un **fork** del proyecto
+2. Crea una **rama** para tu feature (`git checkout -b feature/AmazingFeature`)
+3. **Commit** tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. **Push** a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un **Pull Request**
+---
+
+## 📄 Licencia y créditos
+
+- **Sprites, música y fuentes** utilizados son para fines educativos
+- **Desarrollado por:** Julieta Padilla y Kevin Flores
+- **Inspirado en:** Crossy Road (Hipster Whale)
+---
+## 🎉 ¡Comienza a jugar!
+
+¿Listo para el desafío? ¡Descarga CrossyRoad y supera tu propio récord!
+
+```bash
+make run
+```
+
+### ¡Disfruta el reto y que tengas suerte cruzando! 🍀
+
