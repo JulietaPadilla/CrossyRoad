@@ -178,6 +178,7 @@ public:
                 puntaje.Aumentar(1);
             }
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+                personaje.MoverAbajo(GRID_ROWS - 1);
                 while (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {}
                 sf::sleep(sf::milliseconds(40));
             }
