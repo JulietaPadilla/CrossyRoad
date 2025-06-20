@@ -154,7 +154,7 @@ public:
         personaje.Reiniciar(GRID_COLS / 2, GRID_ROWS - 1);
         nivel = Nivel(GRID_COLS, GRID_ROWS);
         nivel.GenerarObstaculosAvanzado(1);
-        ultimaFilaJugador = personaje.GetGridY();
+        ultimaFilaJugador = personaje.ObtenerFila();
         puntaje.Reiniciar();
         // --- INICIO MONEDAS ---
         Coleccionable moneda5("moneda5", 5);
@@ -168,8 +168,8 @@ public:
                 obstaculosGrid.push_back({obs.GetGridX() + l, obs.GetGridY()});
             }
         }
-        moneda5.ReaparecerAleatorio(GRID_COLS, GRID_ROWS, CELL_SIZE, personaje.GetGridX(), personaje.GetGridY(), obstaculosGrid);
-        moneda10.ReaparecerAleatorio(GRID_COLS, GRID_ROWS, CELL_SIZE, personaje.GetGridX(), personaje.GetGridY(), obstaculosGrid);
+        moneda5.ReaparecerAleatorio(GRID_COLS, GRID_ROWS, CELL_SIZE, personaje.ObtenerColumna(), personaje.ObtenerFila(), obstaculosGrid);
+        moneda10.ReaparecerAleatorio(GRID_COLS, GRID_ROWS, CELL_SIZE, personaje.ObtenerColumna(), personaje.ObtenerFila(), obstaculosGrid);
         // Cargar fondo para el juego principal
         sf::Texture juegoFondoTexture;
         if (!juegoFondoTexture.loadFromFile("assets/images/fondo_juego.jpeg")) {
@@ -222,15 +222,15 @@ public:
                 inputClock.restart();
             }
             // Si el jugador avanza de nivel o reinicia, reubica las monedas
-            if (personaje.GetGridY() < ultimaFilaJugador) {
+            if (personaje.ObtenerFila() < ultimaFilaJugador) {
                 nivelActual++;
                 intervaloObstaculo = std::max(0.06f, intervaloObstaculo - 0.015f);
-                ultimaFilaJugador = personaje.GetGridY();
-                if (personaje.GetGridY() == 0) {
+                ultimaFilaJugador = personaje.ObtenerFila();
+                if (personaje.ObtenerFila() == 0) {
                     personaje.Reiniciar(GRID_COLS / 2, GRID_ROWS - 1);
                     nivel = Nivel(GRID_COLS, GRID_ROWS);
                     nivel.GenerarObstaculosAvanzado(nivelActual);
-                    ultimaFilaJugador = personaje.GetGridY();
+                    ultimaFilaJugador = personaje.ObtenerFila();
                     // Actualiza posiciones de obstáculos y monedas
                     obstaculosGrid.clear();
                     for (const auto& obs : nivel.GetObstaculos()) {
@@ -238,8 +238,8 @@ public:
                             obstaculosGrid.push_back({obs.GetGridX() + l, obs.GetGridY()});
                         }
                     }
-                    moneda5.ReaparecerAleatorio(GRID_COLS, GRID_ROWS, CELL_SIZE, personaje.GetGridX(), personaje.GetGridY(), obstaculosGrid);
-                    moneda10.ReaparecerAleatorio(GRID_COLS, GRID_ROWS, CELL_SIZE, personaje.GetGridX(), personaje.GetGridY(), obstaculosGrid);
+                    moneda5.ReaparecerAleatorio(GRID_COLS, GRID_ROWS, CELL_SIZE, personaje.ObtenerColumna(), personaje.ObtenerFila(), obstaculosGrid);
+                    moneda10.ReaparecerAleatorio(GRID_COLS, GRID_ROWS, CELL_SIZE, personaje.ObtenerColumna(), personaje.ObtenerFila(), obstaculosGrid);
                 }
             }
             nivel.ActualizarObstaculosAvanzado();
@@ -248,9 +248,9 @@ public:
                 int obsX = obstaculo.GetGridX();
                 int obsY = obstaculo.GetGridY();
                 int obsLargo = obstaculo.GetLargo();
-                if (personaje.GetGridY() == obsY &&
-                    personaje.GetGridX() >= obsX &&
-                    personaje.GetGridX() < obsX + obsLargo) {
+                if (personaje.ObtenerFila() == obsY &&
+                    personaje.ObtenerColumna() >= obsX &&
+                    personaje.ObtenerColumna() < obsX + obsLargo) {
                     collisionDetected = true;
                     break;
                 }
@@ -262,7 +262,7 @@ public:
             personaje.ActualizarAnimacion();
             window.clear();
             window.draw(juegoFondoSprite);
-            window.draw(personaje.GetSprite());
+            window.draw(personaje.ObtenerSprite());
             for (auto& obstaculo : nivel.GetObstaculos()) {
                 if (obstaculo.EstaActivo()) {
                     window.draw(obstaculo.GetSprite());
@@ -271,15 +271,15 @@ public:
             // --- MONEDAS: Dibujo y lógica de recolección ---
             moneda5.Dibujar(window);
             moneda10.Dibujar(window);
-            if (moneda5.ColisionaCon(personaje.GetGridX(), personaje.GetGridY())) {
+            if (moneda5.ColisionaCon(personaje.ObtenerColumna(), personaje.ObtenerFila())) {
                 puntaje.Aumentar(moneda5.GetValor());
                 moneda5.Recolectar();
-                moneda5.ReaparecerAleatorio(GRID_COLS, GRID_ROWS, CELL_SIZE, personaje.GetGridX(), personaje.GetGridY(), obstaculosGrid);
+                moneda5.ReaparecerAleatorio(GRID_COLS, GRID_ROWS, CELL_SIZE, personaje.ObtenerColumna(), personaje.ObtenerFila(), obstaculosGrid);
             }
-            if (moneda10.ColisionaCon(personaje.GetGridX(), personaje.GetGridY())) {
+            if (moneda10.ColisionaCon(personaje.ObtenerColumna(), personaje.ObtenerFila())) {
                 puntaje.Aumentar(moneda10.GetValor());
                 moneda10.Recolectar();
-                moneda10.ReaparecerAleatorio(GRID_COLS, GRID_ROWS, CELL_SIZE, personaje.GetGridX(), personaje.GetGridY(), obstaculosGrid);
+                moneda10.ReaparecerAleatorio(GRID_COLS, GRID_ROWS, CELL_SIZE, personaje.ObtenerColumna(), personaje.ObtenerFila(), obstaculosGrid);
             }
             puntaje.Dibujar(window);
             window.display();
