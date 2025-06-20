@@ -14,7 +14,7 @@ private:
 
 public:
     Puntaje() : valor(0), maximo(0) {
-        if (!fuente.loadFromFile("assets/fonts/Platinum Sign.ttf")) {
+        if (!fuente.loadFromFile("assets/fonts/Pirata.ttf")) {
             throw std::runtime_error("No se pudo cargar la fuente para el puntaje");
         }
         texto.setFont(fuente);

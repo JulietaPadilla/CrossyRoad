@@ -33,7 +33,7 @@ public:
         srand(static_cast<unsigned>(time(0)));
         sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Crossy Road");
         sf::Font font;
-        if (!font.loadFromFile("assets/fonts/1up.ttf")) {
+        if (!font.loadFromFile("assets/fonts/Pirata.ttf")) {
             std::cerr << "Error: No se pudo cargar la fuente." << std::endl;
             return;
         }
@@ -236,7 +236,7 @@ public:
         const int WINDOW_HEIGHT = 600;
         sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Crossy Road - Inicio");
         sf::Font font;
-        if (!font.loadFromFile("assets/fonts/Platinum Sign.ttf")) {
+        if (!font.loadFromFile("assets/fonts/Pirata.ttf")) {
             std::cerr << "Error: No se pudo cargar la fuente." << std::endl;
             return;
         }
