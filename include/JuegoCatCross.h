@@ -163,9 +163,9 @@ public:
         moneda10.CargarTextura("assets/images/moneda10.png");
         // Vector de posiciones de obstáculos para evitar superposición
         std::vector<std::pair<int,int>> obstaculosGrid;
-        for (const auto& obs : nivel.GetObstaculos()) {
-            for (int l = 0; l < obs.GetLargo(); ++l) {
-                obstaculosGrid.push_back({obs.GetGridX() + l, obs.GetGridY()});
+        for (const auto& obs : nivel.ObtenerObstaculos()) {
+            for (int l = 0; l < obs.ObtenerLargo(); ++l) {
+                obstaculosGrid.push_back({obs.ObtenerColumna() + l, obs.ObtenerFila()});
             }
         }
         moneda5.ReaparecerAleatorio(GRID_COLS, GRID_ROWS, CELL_SIZE, personaje.ObtenerColumna(), personaje.ObtenerFila(), obstaculosGrid);
@@ -204,6 +204,7 @@ public:
             }
             if (currDown && !prevDown) {
                 personaje.MoverAbajo(GRID_ROWS - 1);
+                puntaje.Disminuir(1);
                 moved = true;
             }
             if (currLeft && !prevLeft) {
@@ -233,9 +234,9 @@ public:
                     ultimaFilaJugador = personaje.ObtenerFila();
                     // Actualiza posiciones de obstáculos y monedas
                     obstaculosGrid.clear();
-                    for (const auto& obs : nivel.GetObstaculos()) {
-                        for (int l = 0; l < obs.GetLargo(); ++l) {
-                            obstaculosGrid.push_back({obs.GetGridX() + l, obs.GetGridY()});
+                    for (const auto& obs : nivel.ObtenerObstaculos()) {
+                        for (int l = 0; l < obs.ObtenerLargo(); ++l) {
+                            obstaculosGrid.push_back({obs.ObtenerColumna() + l, obs.ObtenerFila()});
                         }
                     }
                     moneda5.ReaparecerAleatorio(GRID_COLS, GRID_ROWS, CELL_SIZE, personaje.ObtenerColumna(), personaje.ObtenerFila(), obstaculosGrid);
@@ -244,10 +245,10 @@ public:
             }
             nivel.ActualizarObstaculosAvanzado();
             bool collisionDetected = false;
-            for (auto& obstaculo : nivel.GetObstaculos()) {
-                int obsX = obstaculo.GetGridX();
-                int obsY = obstaculo.GetGridY();
-                int obsLargo = obstaculo.GetLargo();
+            for (auto& obstaculo : nivel.ObtenerObstaculos()) {
+                int obsX = obstaculo.ObtenerColumna();
+                int obsY = obstaculo.ObtenerFila();
+                int obsLargo = obstaculo.ObtenerLargo();
                 if (personaje.ObtenerFila() == obsY &&
                     personaje.ObtenerColumna() >= obsX &&
                     personaje.ObtenerColumna() < obsX + obsLargo) {
@@ -263,21 +264,21 @@ public:
             window.clear();
             window.draw(juegoFondoSprite);
             window.draw(personaje.ObtenerSprite());
-            for (auto& obstaculo : nivel.GetObstaculos()) {
-                if (obstaculo.EstaActivo()) {
-                    window.draw(obstaculo.GetSprite());
+            for (auto& obstaculo : nivel.ObtenerObstaculos()) {
+                if (obstaculo.ObtenerEstadoActivo()) {
+                    window.draw(obstaculo.ObtenerSprite());
                 }
             }
             // --- MONEDAS: Dibujo y lógica de recolección ---
             moneda5.Dibujar(window);
             moneda10.Dibujar(window);
-            if (moneda5.ColisionaCon(personaje.ObtenerColumna(), personaje.ObtenerFila())) {
-                puntaje.Aumentar(moneda5.GetValor());
+            if (moneda5.ColisionarConGatito(personaje.ObtenerColumna(), personaje.ObtenerFila())) {
+                puntaje.Aumentar(moneda5.ObtenerValor());
                 moneda5.Recolectar();
                 moneda5.ReaparecerAleatorio(GRID_COLS, GRID_ROWS, CELL_SIZE, personaje.ObtenerColumna(), personaje.ObtenerFila(), obstaculosGrid);
             }
-            if (moneda10.ColisionaCon(personaje.ObtenerColumna(), personaje.ObtenerFila())) {
-                puntaje.Aumentar(moneda10.GetValor());
+            if (moneda10.ColisionarConGatito(personaje.ObtenerColumna(), personaje.ObtenerFila())) {
+                puntaje.Aumentar(moneda10.ObtenerValor());
                 moneda10.Recolectar();
                 moneda10.ReaparecerAleatorio(GRID_COLS, GRID_ROWS, CELL_SIZE, personaje.ObtenerColumna(), personaje.ObtenerFila(), obstaculosGrid);
             }

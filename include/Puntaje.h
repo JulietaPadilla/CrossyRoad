@@ -26,22 +26,47 @@ public:
         texto.setPosition(20, 20);
         texto.setString("PUNTAJE: 0");
     }
+
     void Aumentar(int cantidad) {
         valor += cantidad;
         texto.setString("PUNTAJE: " + std::to_string(valor));
         if (valor > maximo) maximo = valor;
     }
-    void Reiniciar() { valor = 0; texto.setString("PUNTAJE: 0"); }
-    int ObtenerValor() const { return valor; }
-    int ObtenerMaximo() const { return maximo; }
-    void SetMaximo(int m) { maximo = m; }
+
+    void Disminuir(int cantidad) {
+        valor -= cantidad;
+        if (valor < 0) valor = 0; // Evitar puntaje negativo
+        texto.setString("PUNTAJE: " + std::to_string(valor));
+    }
+
+    void Reiniciar() { 
+        valor = 0; 
+        texto.setString("PUNTAJE: 0"); 
+    }
+
+    int ObtenerValor() const { 
+        return valor; 
+    }
+
+    int ObtenerMaximo() const { 
+        return maximo; 
+    }
+
+    void SetMaximo(int m) { 
+        maximo = m; 
+    }
+
     void GuardarMaximo(const std::string& archivo) {
         std::ofstream out("assets/puntajes/" + archivo);
         if (out) out << maximo;
     }
+
     void CargarMaximo(const std::string& archivo) {
         std::ifstream in("assets/puntajes/" + archivo);
         if (in) in >> maximo;
     }
-    void Dibujar(sf::RenderWindow& window) { window.draw(texto); }
+
+    void Dibujar(sf::RenderWindow& window) { 
+        window.draw(texto); 
+    }
 };

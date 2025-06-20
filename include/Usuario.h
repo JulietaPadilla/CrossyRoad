@@ -31,8 +31,20 @@ public:
             in.close();
         }
     }
-    void ConfigurarPuntuacionMaxima(int p) { puntuacionMaxima = p; }
-    void ConfigurarNombre(const std::string& n) { nombre = n; }
-    std::string ObtenerNombre() const { return nombre; }
-    int ObtenerPuntuacionMaxima() const { return puntuacionMaxima; }
+
+    void ConfigurarPuntuacionMaxima(int p) { 
+        puntuacionMaxima = p; 
+    }
+
+    void ConfigurarNombre(const std::string& n) { 
+        nombre = n; 
+    }
+
+    std::string ObtenerNombre() const { 
+        return nombre; 
+    }
+
+    int ObtenerPuntuacionMaxima() const { 
+        return puntuacionMaxima; 
+    }
 };

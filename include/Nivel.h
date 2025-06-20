@@ -9,34 +9,34 @@ class Nivel {
 private:
     std::string tema;
     std::vector<Obstaculo> obstaculos;
-    int gridWidth;
-    int gridHeight;
+    int anchoCuadricula;
+    int altoCuadricula;
     std::vector<float> velocidadesPorFila; // velocidad de cada fila
     std::vector<sf::Clock> temporizadoresPorFila; // temporizador de cada fila
     std::vector<bool> filaConObstaculos; // si la fila tiene obstáculos
 
 public:
-    Nivel(int width = 10, int height = 10) : tema(""), gridWidth(width), gridHeight(height) {
-        velocidadesPorFila.resize(height, 0.25f);
-        temporizadoresPorFila.resize(height);
-        filaConObstaculos.resize(height, false);
+    Nivel(int ancho = 10, int alto = 10) : tema(""), anchoCuadricula(ancho), altoCuadricula(alto) {
+        velocidadesPorFila.resize(alto, 0.25f);
+        temporizadoresPorFila.resize(alto);
+        filaConObstaculos.resize(alto, false);
     }
 
-    void GenerarObstaculos(int fila, int cantidad, int direction) {
+    void GenerarObstaculos(int fila, int cantidad, int direccion) {
         obstaculos.clear();
         std::random_device rd;
         std::mt19937 gen(rd());
         std::uniform_int_distribution<int> largoDist(1, 3); // tamaño aleatorio entre 1 y 3
         for (int i = 0; i < cantidad; ++i) {
-            int x = i * (gridWidth / cantidad);
+            int x = i * (anchoCuadricula / cantidad);
             int largo = largoDist(gen);
-            obstaculos.emplace_back("car", x, fila, direction, largo);
+            obstaculos.emplace_back("car", x, fila, direccion, largo);
         }
     }
 
     void ActualizarObstaculos() {
         for (auto& obs : obstaculos) {
-            obs.Mover(gridWidth - 1);
+            obs.Mover(anchoCuadricula - 1);
         }
     }
 
@@ -52,7 +52,7 @@ public:
         int separacionMin = std::max(2, 4 + nivel / 3); // nunca menos de 2
         int separacionMax = std::max(separacionMin, 5 + nivel / 2); // Asegura que separacionMax >= separacionMin
         std::uniform_int_distribution<int> sepDist(separacionMin, separacionMax);
-        for (int fila = 1; fila < gridHeight - 1; ++fila) {
+        for (int fila = 1; fila < altoCuadricula - 1; ++fila) {
             // Más dispersión y aleatoriedad: 50% chance de fila vacía
             bool tieneObstaculos = (rand() % 2 == 0);
             filaConObstaculos[fila] = tieneObstaculos;
@@ -60,7 +60,7 @@ public:
             temporizadoresPorFila[fila].restart();
             if (!tieneObstaculos) continue;
             int direction = dirDist(gen) == 0 ? 1 : -1;
-            int maxObstaculos = std::max(1, gridWidth / (separacionMin + 1));
+            int maxObstaculos = std::max(1, anchoCuadricula / (separacionMin + 1));
             int cantidadRandom = 2 + (nivel / 3);
             if (maxObstaculos < 1) maxObstaculos = 1;
             if (cantidadRandom < 1) cantidadRandom = 1;
@@ -68,9 +68,9 @@ public:
             int cantidadTmp = cantidadRandom + cantidadExtra;
             int cantidad = (maxObstaculos < cantidadTmp) ? maxObstaculos : cantidadTmp;
             int separacion = std::max(8, sepDist(gen) + (rand() % 4));
-            int start = gen() % gridWidth;
+            int start = gen() % anchoCuadricula;
             for (int i = 0; i < cantidad; ++i) {
-                int x = (start + i * separacion) % gridWidth;
+                int x = (start + i * separacion) % anchoCuadricula;
                 int largo = largoDist(gen);
                 obstaculos.emplace_back("car", x, fila, direction, largo);
             }
@@ -78,12 +78,12 @@ public:
     }
 
     void ActualizarObstaculosAvanzado() {
-        for (int fila = 1; fila < gridHeight - 1; ++fila) {
+        for (int fila = 1; fila < altoCuadricula - 1; ++fila) {
             if (!filaConObstaculos[fila]) continue;
             if (temporizadoresPorFila[fila].getElapsedTime().asSeconds() > velocidadesPorFila[fila]) {
                 for (auto& obs : obstaculos) {
-                    if (obs.GetGridY() == fila) {
-                        obs.Mover(gridWidth - 1);
+                    if (obs.ObtenerFila() == fila) {
+                        obs.Mover(anchoCuadricula - 1);
                     }
                 }
                 temporizadoresPorFila[fila].restart();
@@ -91,7 +91,15 @@ public:
         }
     }
 
-    std::vector<Obstaculo>& GetObstaculos() { return obstaculos; }
-    int GetGridWidth() const { return gridWidth; }
-    int GetGridHeight() const { return gridHeight; }
+    std::vector<Obstaculo>& ObtenerObstaculos() { 
+        return obstaculos; 
+    }
+
+    int ObtenerAnchoCuadricula() const { 
+        return anchoCuadricula; 
+    }
+
+    int ObtenerAltoCuadricula() const { 
+        return altoCuadricula; 
+    }
 };

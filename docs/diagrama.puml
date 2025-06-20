@@ -17,6 +17,7 @@ class Puntaje {
     - fuente: sf::Font
     - texto: sf::Text
     + Aumentar(cantidad: int)
+    + Disminuir(cantidad: int)
     + Reiniciar()
     + ObtenerValor(): int
     + ObtenerMaximo(): int
@@ -70,38 +71,78 @@ class Gatito {
 class Nivel {
     - tema: string
     - obstaculos: Obstaculo[]
-    - coleccionables: Coleccionable[]
-    + generarObstaculos()
-    + generarColeccionables()
-    + actualizar()
+    - anchoCuadricula: int
+    - altoCuadricula: int
+    - velocidadesPorFila: float[]
+    - temporizadoresPorFila: sf::Clock[]
+    - filaConObstaculos: bool[]
+    + GenerarObstaculos(fila: int, cantidad: int, direccion: int)
+    + ActualizarObstaculos()
+    + GenerarObstaculosAvanzado(nivel: int)
+    + ActualizarObstaculosAvanzado()
+    + ObtenerObstaculos(): Obstaculo[]
+    + ObtenerAnchoCuadricula(): int
+    + ObtenerAltoCuadricula(): int
 }
 
 class Sonido {
     - archivo: string
-    + reproducir()
-    + detener()
+    - musica: sf::Music
+    - cargado: bool
+    + Cargar(archivo: const string&): bool
+    + Reproducir(loop: bool = false)
+    + Detener()
+    + ObtenerEstadoReproduccion(): bool
 }
 
 class Obstaculo {
     - tipo: string
-    - posicionX: int
-    - posicionY: int
-    + mover()
+    - columna: int
+    - fila: int 
+    - direccion: int
+    - largo: int
+    - forma: sf::RectangleShape
+    - activo: bool
+    - sprite: sf::Sprite
+    - texturaCargada: bool
+    - static texturasCompartidas: map<int, sf::Texture>
+    + Mover(maximaColumna: int)
+    + Dibujar(window: sf::RenderWindow)
+    + ObtenerColumna(): int
+    + ObtenerFila(): int
+    + ObtenerDireccion(): int
+    + ObtenerLargo(): int
+    + ObtenerForma(): sf::RectangleShape&
+    + ObtenerSprite(): sf::Sprite&
+    + ObtenerEstadoActivo(): bool
+    + Destruir()
 }
 
 class Coleccionable {
     - tipo: string
     - posicionX: int
     - posicionY: int
-    + recolectar()
+    - textura: sf::Texture
+    - sprite: sf::Sprite
+    - recolectado: bool
+    - valor: int
+    + CargarTextura(rutaArchivo: const string&)
+    + EstablecerPosicion(columna: int, fila: int, tamañoCelda: int)
+    + Dibujar(ventana: sf::RenderWindow&)
+    + Recolectar()
+    + VerificarRecoleccion(): bool
+    + ObtenerSprite(): sf::Sprite*
+    + ObtenerValor(): int
+    + ObtenerTipo(): string
+    + ReaparecerAleatorio(columnaCuadricula: int, filaCuadricula: int, tamañoCelda: int, columnaProhibida: int, filaProhibida: int, obstaculos: const vector<pair<int, int>>&)
+    + ColisionarConGatito( jugadorPosicionX: int, jugadorPosicionY: int, tamañoCelda: int): bool
 }
 
 JuegoCatCross *-- Gatito : tiene un
 JuegoCatCross *-- Nivel : tiene un
-JuegoCatCross *-- Sonido : tiene un
-JuegoCatCross *-- Ventana : tiene un
+JuegoCatCross --o Sonido : usa un
 JuegoCatCross *-- Puntaje : tiene un
-Usuario o-- JuegoCatCross : usa un
+JuegoCatCross *-- Usuario : tiene un
 Nivel "1" *-- "*" Obstaculo : tiene muchos
 Nivel "1" *-- "*" Coleccionable : tiene muchos
 

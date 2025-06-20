@@ -28,9 +28,9 @@ public:
     }
 
     // Método para establecer la posición del coleccionable en coordenadas de cuadrícula
-    void SetPosicionGrid(int gridX, int gridY, int cellSize = 48) {
-        posicionX = gridX * cellSize;
-        posicionY = gridY * cellSize;
+    void EstablecerPosicion(int columna, int fila, int tamañoCelda = 48) {
+        posicionX = columna * tamañoCelda;
+        posicionY = fila * tamañoCelda;
         sprite.setPosition(static_cast<float>(posicionX), static_cast<float>(posicionY));
     }
 
@@ -50,30 +50,35 @@ public:
     }
 
     // Método para verificar si el coleccionable ha sido recolectado
-    bool EsRecolectado() const {
+    bool VerificarRecoleccion() const {
         return recolectado;
     }
 
     // Método para obtener el sprite (para colisiones)
-    sf::Sprite* GetSprite() {
+    sf::Sprite* ObtenerSprite() {
         return &sprite;
     }
 
-    int GetValor() const { return valor; }
-    std::string GetTipo() const { return tipo; }
+    int ObtenerValor() const { 
+        return valor; 
+    }
+
+    std::string ObtenerTipo() const { 
+        return tipo; 
+    }
 
     // Método para reaparecer aleatoriamente en el grid
-    void ReaparecerAleatorio(int gridCols, int gridRows, int cellSize, int avoidX, int avoidY, const std::vector<std::pair<int,int>>& obstaculos) {
+    void ReaparecerAleatorio(int columnaCuadricula, int filaCuadricula, int tamañoCelda, int columnaProhibida, int filaProhibida, const std::vector<std::pair<int,int>>& obstaculos) {
         std::random_device rd;
         std::mt19937 gen(rd());
-        std::uniform_int_distribution<int> distX(0, gridCols-1);
-        std::uniform_int_distribution<int> distY(1, gridRows-2); // Evita la fila 0 y la última
+        std::uniform_int_distribution<int> distX(0, columnaCuadricula-1);
+        std::uniform_int_distribution<int> distY(1, filaCuadricula-2); // Evita la fila 0 y la última
         int gx, gy;
         bool conflict;
         do {
             gx = distX(gen);
             gy = distY(gen);
-            conflict = (gx == avoidX && gy == avoidY);
+            conflict = (gx == columnaProhibida && gy == filaProhibida);
             for (const auto& obs : obstaculos) {
                 if (gx == obs.first && gy == obs.second) {
                     conflict = true;
@@ -81,15 +86,15 @@ public:
                 }
             }
         } while (conflict);
-        SetPosicionGrid(gx, gy, cellSize);
+        EstablecerPosicion(gx, gy, tamañoCelda);
         recolectado = false;
     }
 
     // Método para checar colisión con el jugador (en grid)
-    bool ColisionaCon(int playerGridX, int playerGridY, int cellSize = 48) {
-        int gx = posicionX / cellSize;
-        int gy = posicionY / cellSize;
-        return (!recolectado && gx == playerGridX && gy == playerGridY);
+    bool ColisionarConGatito(int jugadorPosicionX, int jugadorPosicionY, int tamañoCelda = 48) {
+        int gx = posicionX / tamañoCelda;
+        int gy = posicionY / tamañoCelda;
+        return (!recolectado && gx == jugadorPosicionX && gy == jugadorPosicionY);
     }
 };
 
