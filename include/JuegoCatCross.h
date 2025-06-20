@@ -121,7 +121,7 @@ public:
             window.draw(inputText);
             window.display();
         }
-        usuario.SetNombre(nombreUsuario);
+        usuario.ConfigurarNombre(nombreUsuario);
         // Cargar puntaje máximo del usuario
         std::string archivoPuntaje = "puntaje_" + nombreUsuario + ".dat";
         usuario.CargarPuntuacionMaxima(archivoPuntaje);
@@ -285,7 +285,7 @@ public:
             window.display();
         }
         // Al final del juego, guardar puntaje máximo
-        usuario.SetPuntuacionMaxima(puntaje.ObtenerMaximo());
+        usuario.ConfigurarPuntuacionMaxima(puntaje.ObtenerMaximo());
         usuario.GuardarPuntuacionMaxima(archivoPuntaje);
         std::cout << "Debug: Juego terminado." << std::endl;
     }
